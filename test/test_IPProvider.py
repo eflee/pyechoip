@@ -38,13 +38,13 @@ class TestIPProvider(TestCase):
 
     @requests_mock.Mocker()
     def test_get_info(self, m):
-        m.register_uri('GET', 'https://fake-ip-json-url.com/', text='{"countryCode":"US", "query":"127.0.0.1"}')
+        m.register_uri('GET', 'https://fake-ip-json-url.com/', text='{"countryCode": "US", "query": "127.0.0.1"}')
         fac = SourceFactory(use_builtins=False)
         fac.add_source(JSONIPSource, 'https://fake-ip-json-url.com/', 'query')
         ipp = IPProvider()
         for source in fac.get_sources():
             ipp.add_source(source)
-        self.assertEquals(ipp.get_info(), {'countryCode':'US'})
+        self.assertEquals(ipp.get_info(), {'countryCode': 'US'})
 
     @patch('requests.get')
     def test_no_response(self, m):

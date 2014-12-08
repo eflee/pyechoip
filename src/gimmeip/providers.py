@@ -10,6 +10,7 @@ import random
 import requests
 
 
+# noinspection PyMethodMayBeStatic
 class IIPProvider(zope.interface.Interface):
     def add_source(self, source):
         """Adds a source to the set being used by the provider"""
@@ -83,15 +84,16 @@ class IPProvider(object):
         :return: The info dictionary returned by the provider
         :rtype: dict
         """
-        if not self.is_cache_valid or not self._cache_info or not self._verify_required_keys(required_info_keys):
+        if not self.is_cache_valid or not self._cache_info \
+                or not self._verify_required_keys(self._cache_info, required_info_keys):
             self._cache_ip, self._cache_info = self._fetch_from_sources(required_info_keys)
             self._cache_timestamp = time.time()
         return self._cache_info
 
     def _fetch_from_sources(self, required_info_keys=None):
-        sources = self._sources.keys()
-        random.shuffle(sources)
-        for source in sources:
+        srces = self._sources.keys()
+        random.shuffle(srces)
+        for source in srces:
             try:
                 source.refresh()
 
@@ -163,9 +165,9 @@ class MultisourceIPProvider(IPProvider):
                 self._min_source_agreement, self.num_sources))
         infos = dict()
         ips = collections.defaultdict(list)
-        sources = self._sources.keys()
-        random.shuffle(sources)
-        for source in sources:
+        srces = self._sources.keys()
+        random.shuffle(srces)
+        for source in srces:
             try:
                 source.refresh()
                 ip = source.ip

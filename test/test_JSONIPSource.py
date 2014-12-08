@@ -16,16 +16,16 @@ class TestJSONBasedIPSource(TestCase):
     @requests_mock.Mocker()
     def test_ip_success(self, m):
         """Tests that a proper response from the URL yields the right interface"""
-        m.register_uri('GET', 'https://fake-ip-url.com/', text='{"countryCode":"US", "query":"127.0.0.1"}')
+        m.register_uri('GET', 'https://fake-ip-url.com/', text='{"countryCode": "US", "query": "127.0.0.1"}')
         self.assertIsInstance(self.source.ip, IPv4Address, "IP address is parsable as IPv4")
         self.assertEquals(IPv4Address('127.0.0.1'), self.source.ip)
 
     @requests_mock.Mocker()
     def test_info_success(self, m):
         """Tests that a proper response from the URL yields no additional info (for this class)"""
-        m.register_uri('GET', 'https://fake-ip-url.com/', text='{"countryCode":"US", "query":"127.0.0.1"}')
+        m.register_uri('GET', 'https://fake-ip-url.com/', text='{"countryCode": "US", "query": "127.0.0.1"}')
         self.assertIsInstance(self.source.info, dict, "Additional info should be a dict")
-        self.assertEquals({'countryCode':'US'}, self.source.info)
+        self.assertEquals({'countryCode': 'US'}, self.source.info)
 
     @requests_mock.Mocker()
     def test_bad_data(self, m):

@@ -4,7 +4,7 @@ from gimmeip.providers import MultisourceIPProvider, InsufficientSourcesForAgree
 import requests_mock
 from ipaddress import IPv4Address
 import time
-import requests
+
 __docformat__ = 'restructuredtext en'
 __author__ = 'eflee'
 
@@ -71,8 +71,6 @@ class TestMultisourceIPProvider(TestCase):
         for source in fac.get_sources():
             ipp.add_source(source)
         self.assertRaises(InsufficientSourcesForAgreementError, ipp.get_info)
-
-
 
     @requests_mock.Mocker()
     def test_get_info_with_required_keys(self, m):
