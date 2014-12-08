@@ -6,6 +6,7 @@ import ipaddress
 import sources
 import collections
 import time
+import random
 import requests
 
 
@@ -88,7 +89,9 @@ class IPProvider(object):
         return self._cache_info
 
     def _fetch_from_sources(self, required_info_keys=None):
-        for source in self._sources:
+        sources = self._sources.keys()
+        random.shuffle(sources)
+        for source in sources:
             try:
                 source.refresh()
 

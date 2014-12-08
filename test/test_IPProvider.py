@@ -107,7 +107,6 @@ class TestIPProvider(TestCase):
 
         self.assertTrue(ipp.is_cache_valid())
         while time.time() - timestamp < 3:
-            print time.time() - timestamp
             time.sleep(0.5)
         self.assertFalse(ipp.is_cache_valid())
 
