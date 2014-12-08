@@ -27,12 +27,21 @@ please ask for it.
 
 The standard IPProvider checks a single source, provides and caches the answer. 
 
+```
     In [1]: import gimmeip
     In [2]: import gimmeip.sources
     In [3]: import gimmeip.providers
     In [4]: source_factory = gimmeip.sources.IPSourceFactory()
     In [5]: provider = gimmeip.providers.IPProvider()
-    
+    In [6]: for source in source_factory.get_sources():
+       ...:     provider.add_source(source)
+       ...:
+    In [7]: provider.get_ip()
+    Out[7]: IPv4Address('67.171.19.153')
+```
+
+Usage:
+
     Type:            type
     String form:     <class 'gimmeip.providers.IPProvider'>
     Init definition: gimmeip.providers.IPProvider(self, source_list=None, cache_ttl=3600)
@@ -45,23 +54,18 @@ The standard IPProvider checks a single source, provides and caches the answer.
     :type source_list: list of IIPSource providers
     :param cache_ttl: the seconds the ip cache remains valid
     :type cache_ttl: int
-
-    
-    In [6]: for source in source_factory.get_sources():
-       ...:     provider.add_source(source)
-       ...:
-    In [7]: provider.get_ip()
-    Out[7]: IPv4Address('67.171.19.153')
     
 Some sources choose to provide additional information (like GeoIP information). 
 That information is marshalled into a single dictionary based and can be
 retrieved by get_info():
 
+```
     In [8]: provider.get_info()
     Out[8]:
     {u'city': u'Keb',
      u'country': u'CO',
      u'loc': u'27.6355,-22.3235'}
+```
 
 Further documenation: 
 
