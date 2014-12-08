@@ -20,6 +20,6 @@ setup(
     description="A generic library for getting your externally visible IP address in python.",
     license="Apache",
     keywords="ip network",
-    url="http://elif.us/pygimmeip",  # project home page, if any
+    url="https://github.com/eflee/pygimmeip",  # project home page, if any
     test_suite='tst',
 )
