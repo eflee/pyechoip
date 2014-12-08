@@ -6,6 +6,7 @@ import requests
 import ipaddress
 import copy
 import random
+import sys
 
 
 class IIPSource(zope.interface.Interface):
@@ -69,6 +70,7 @@ class SimpleIPSource(object):
         self._ip = ipaddress.ip_address(response.content.strip())
         self._info = dict()
 
+
 class JSONBasedIPSource(SimpleIPSource):
     zope.interface.implements(IIPSource)
 
@@ -92,9 +94,83 @@ class JSONBasedIPSource(SimpleIPSource):
         response = requests.get(self._ip_url)
         raw_response = response.json()
         raw_ip = raw_response[self._ip_key]
-        if isinstance((tuple, list), raw_ip):
+        if isinstance(raw_ip, (tuple, list)):
             raw_ip = raw_ip[0]
         self._ip = ipaddress.ip_address(raw_ip)
-        if self
         self._info = raw_response
         del(self._info[self._ip_key])
+
+
+class SourceFactory(object):
+    _builtin_sources = {'ip-api.com':       (JSONBasedIPSource, 'http://ip-api.com/json', 'ip'),
+                        'ifconfig.me':      (JSONBasedIPSource, 'http://ifconfig.me/all.json', 'ip_addr'),
+                        'ifconfig.co':      (JSONBasedIPSource, 'http://ifconfig.co/all.json', 'X-Real-Ip'),
+                        'ipinfo.io':        (JSONBasedIPSource, 'http://ipinfo.io/json', 'ip'),
+                        'ipinfo.org':       (JSONBasedIPSource, 'http://ipinfo.org/json', 'ip'),
+                        'trackip.net':      (JSONBasedIPSource, 'http://www.trackip.net/ip?json', 'ip'),
+                        'httpbin.org':      (JSONBasedIPSource, 'http://httpbin.org/get', 'origin'),
+                        'wtfismyip.com':    (JSONBasedIPSource, 'http://wtfismyip.com/json', 'YourFuckingIPAddress'),
+                        'ipecho.net':       (SimpleIPSource, 'http://ipecho.net/plain'),
+                        'eth0.me':          (SimpleIPSource, 'http://eth0.me/'),
+                        'ip.appstop.com':   (SimpleIPSource, 'http://ip.appspot.com/'),
+                        'l2.io':            (SimpleIPSource, 'http://l2.io/ip'),
+                        'curlmyip.com':     (SimpleIPSource, 'http://curlmyip.com/'),
+                        'icanhazip.com':    (SimpleIPSource, 'http://icanhazip.com/'),
+                        }
+
+    def __init__(self, use_builtins=True):
+        """
+        A Factory that can be used to generate IIPSource providers
+        :param use_builtins: there are a number of built-in sources available in this library, this option includes
+        them by default in the factory.
+        :type use_builtins: bool
+        """
+        self._sources = set()
+        if use_builtins:
+            for v in self._builtin_sources.values():
+                self.add_source(*v)
+
+    def add_source(self, source_class, *constructor_args):
+        """
+        Adds a source to the factory provided it's type and constructor arguments
+        :param source_class: The class used to instantiate the source
+        :type source_class: Class
+        :param constructor_args: Arguments to be passed into the constructor
+        :type constructor_args: Iterable
+        """
+        if not IIPSource.implementedBy(source_class):
+            raise TypeError("source_class {} must implement IIPSource".format(source_class))
+        else:
+            self._sources.add((source_class, constructor_args))
+
+    def get_sources(self, limit=sys.maxint, types_list=None):
+        """
+        Generates instantiated sources from the factory
+        :param limit: the max number of sources to yield
+        :type limit: int
+        :param types_list: filter by types so the constructor can be used to accomidate many types
+        :type types_list: class or list of classes
+        :return: Yields types added by add_source
+        :rtype: generator
+        """
+        if types_list and not isinstance(types_list, (tuple, list)):
+                types_list = [types_list]
+
+        sources = list(self._sources)
+        random.shuffle(sources)
+
+        for source in sources:
+            if not types_list or source[0] in types_list:
+                limit -= 1
+                yield source[0](*source[1])
+
+            if limit <= 0:
+                break
+
+    @property
+    def num_sources(self):
+        """
+        :return: The number of configured sources
+        :rtype: int
+        """
+        return len(self._sources)
