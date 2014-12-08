@@ -82,12 +82,21 @@ results.
 
 The provider is used the exact same way. 
 
+```
     In [1]: import gimmeip
     In [2]: import gimmeip.sources
     In [3]: import gimmeip.providers
     In [4]: source_factory = gimmeip.sources.IPSourceFactory()
     In [5]: provider = gimmeip.providers.MultisourceIPProvider
-    
+    In [6]: for source in source_factory.get_sources():
+       ...:     provider.add_source(source)
+       ...:
+    In [7]: provider.get_ip()
+    Out[7]: IPv4Address('67.171.19.153')
+```
+
+Usage: 
+
     Type:            type
     String form:     <class 'gimmeip.providers.MultisourceIPProvider'>
     File:            /Users/eflee/Development/pygimmeip/src/gimmeip/providers.py
@@ -104,12 +113,6 @@ The provider is used the exact same way.
     :param cache_ttl: the seconds the ip cache remains valid
     :param min_source_agreement: The minimum number of source that must be in agreement for an ip_fetch
     :type min_source_agreement: int
-    
-    In [6]: for source in source_factory.get_sources():
-       ...:     provider.add_source(source)
-       ...:
-    In [7]: provider.get_ip()
-    Out[7]: IPv4Address('67.171.19.153')
     
 Further documenation: 
 
@@ -148,11 +151,13 @@ The SimpleIPSource handles sites like curlmyip.com that return only an string
 IP. The class simply strips the whitespace from the string and validates it 
 by instantiating it as an IPAddress.
 
+```
     In [1]: import gimmeip.sources
     In [2]: source = gimmeip.sources.SimpleIPSource('http://curlmyip.com/')
     In [3]: source.ip
     Out[3]: IPv4Address('67.171.19.153')
-    
+```
+
 The info attribute on this IPSource type is always empty.
 
 ### JSONIPSource
@@ -163,6 +168,7 @@ then uses the same validation as the SimpleIPSource class. All other results
 returned by the API are boxed into a dict that is returned by the info 
 attribute.
 
+```
     In [1]: import gimmeip.sources
     In [2]: source = gimmeip.sources.JSONIPSource('http://ip-api.com/json', 'query')
     In [3]: source.ip
@@ -172,6 +178,7 @@ attribute.
     {u'city': u'Keb',
      u'country': u'CO',
      u'loc': u'27.6355,-22.3235'}
+```
 
 ### IPSourceFactory
 
@@ -181,6 +188,7 @@ types. Two, it allows the user to instantiate with all of the built-in sites.
 
 Instantiating with custom resources:
 
+```
     In [1]: import gimmeip.sources
     In [2]: fac = gimmeip.sources.IPSourceFactory(use_builtins=False)
     In [3]: fac.add_source(gimmeip.sources.SimpleIPSource, 'http://10.0.0.1')
@@ -191,9 +199,11 @@ Instantiating with custom resources:
     Out[6]:
     [<gimmeip.sources.SimpleIPSource at 0x10bb5d390>,
     <gimmeip.sources.JSONIPSource at 0x10bb5d3d0>]
+```
 
 Instantiation with built-ins (default):
     
+```
     In [1]: import gimmeip.sources
     In [2]: fac = gimmeip.sources.IPSourceFactory()
     In [3]: fac.num_sources
@@ -205,6 +215,7 @@ Instantiation with built-ins (default):
     <gimmeip.sources.JSONIPSource at 0x102f6b590>,
     ...
     <gimmeip.sources.SimpleIPSource at 0x102f6b850>]
+```
 
 
 Built-in Sites
