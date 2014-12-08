@@ -115,15 +115,16 @@ class IPProvider(object):
     @staticmethod
     def _verify_required_keys(info, required_info_keys):
         keys_found = True
-        for key in required_info_keys:
-            if isinstance(key, (tuple, list)):
-                if not any([subkey in info for subkey in key]):
-                    keys_found = False
-                    break
-            else:
-                if key not in info:
-                    keys_found = False
-                    break
+        if required_info_keys is not None:
+            for key in required_info_keys:
+                if isinstance(key, (tuple, list)):
+                    if not any([subkey in info for subkey in key]):
+                        keys_found = False
+                        break
+                else:
+                    if key not in info:
+                        keys_found = False
+                        break
         return keys_found
 
     def invalidate_cache(self):
