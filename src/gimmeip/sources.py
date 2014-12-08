@@ -100,7 +100,7 @@ class JSONIPSource(SimpleIPSource):
         del (self._info[self._ip_key])
 
 
-class SourceFactory(object):
+class IPSourceFactory(object):
     _builtin_sources = {'ip-api.com': (JSONIPSource, 'http://ip-api.com/json', 'ip'),
                         'ifconfig.me': (JSONIPSource, 'http://ifconfig.me/all.json', 'ip_addr'),
                         'ifconfig.co': (JSONIPSource, 'http://ifconfig.co/all.json', 'X-Real-Ip'),
