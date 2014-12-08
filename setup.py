@@ -21,5 +21,5 @@ setup(
     license="Apache",
     keywords="ip network",
     url="http://elif.us/pygimmeip",  # project home page, if any
-    test_suite='test',
+    test_suite='tst',
 )
