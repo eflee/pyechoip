@@ -6,7 +6,7 @@ setup(
     packages=find_packages('src'),
     package_dir={'': 'src'},
     
-    install_requires=['requests',],
+    install_requires=['requests', 'mock',],
 
     package_data={
         # If any package contains *.txt or *.rst files, include them:
