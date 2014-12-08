@@ -1,5 +1,5 @@
 from unittest import TestCase
-from gimmeip.sources import SourceFactory, SimpleIPSource, JSONBasedIPSource
+from gimmeip.sources import SourceFactory, SimpleIPSource, JSONIPSource
 import requests_mock
 
 __docformat__ = 'restructuredtext en'
@@ -33,7 +33,7 @@ class TestSourceFactory(TestCase):
         self.assertGreater(fac.num_sources, len([x for x in fac.get_sources(types_list=[SimpleIPSource])]))
         fac = SourceFactory()
         self.assertEqual(fac.num_sources, len([x for x in fac.get_sources(
-            types_list=[SimpleIPSource, JSONBasedIPSource])]))
+            types_list=[SimpleIPSource, JSONIPSource])]))
 
     def test_filtering_autobox_type(self):
         """Tests that the autoboxing of a type into a list works as advertised"""
@@ -47,7 +47,7 @@ class TestSourceFactory(TestCase):
         m.register_uri('GET', 'https://fake-ip-json-url.com/', text='{"countryCode":"US", "query":"127.0.0.1"}')
         fac = SourceFactory(use_builtins=False)
         fac.add_source(SimpleIPSource, 'https://fake-ip-url.com/')
-        fac.add_source(JSONBasedIPSource, 'https://fake-ip-json-url.com/', 'query')
+        fac.add_source(JSONIPSource, 'https://fake-ip-json-url.com/', 'query')
         self.assertEquals(fac.num_sources, 2)
         self.assertEquals(len([x for x in fac.get_sources()]), 2)
 

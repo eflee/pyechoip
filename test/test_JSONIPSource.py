@@ -11,7 +11,7 @@ __author__ = 'eflee'
 
 class TestJSONBasedIPSource(TestCase):
     def setUp(self):
-        self.source = gimmeip.sources.JSONBasedIPSource('https://fake-ip-url.com/', 'query')
+        self.source = gimmeip.sources.JSONIPSource('https://fake-ip-url.com/', 'query')
 
     @requests_mock.Mocker()
     def test_ip_success(self, m):

@@ -71,7 +71,7 @@ class SimpleIPSource(object):
         self._info = dict()
 
 
-class JSONBasedIPSource(SimpleIPSource):
+class JSONIPSource(SimpleIPSource):
     zope.interface.implements(IIPSource)
 
     def __init__(self, ip_url, ip_key):
@@ -82,7 +82,7 @@ class JSONBasedIPSource(SimpleIPSource):
         :param ip_key: The key in the json response used to encapsulate the IP
         :type ip_key: str
         """
-        super(JSONBasedIPSource, self).__init__(ip_url)
+        super(JSONIPSource, self).__init__(ip_url)
         self._ip_key = ip_key
 
     def refresh(self):
@@ -102,14 +102,14 @@ class JSONBasedIPSource(SimpleIPSource):
 
 
 class SourceFactory(object):
-    _builtin_sources = {'ip-api.com':       (JSONBasedIPSource, 'http://ip-api.com/json', 'ip'),
-                        'ifconfig.me':      (JSONBasedIPSource, 'http://ifconfig.me/all.json', 'ip_addr'),
-                        'ifconfig.co':      (JSONBasedIPSource, 'http://ifconfig.co/all.json', 'X-Real-Ip'),
-                        'ipinfo.io':        (JSONBasedIPSource, 'http://ipinfo.io/json', 'ip'),
-                        'ipinfo.org':       (JSONBasedIPSource, 'http://ipinfo.org/json', 'ip'),
-                        'trackip.net':      (JSONBasedIPSource, 'http://www.trackip.net/ip?json', 'ip'),
-                        'httpbin.org':      (JSONBasedIPSource, 'http://httpbin.org/get', 'origin'),
-                        'wtfismyip.com':    (JSONBasedIPSource, 'http://wtfismyip.com/json', 'YourFuckingIPAddress'),
+    _builtin_sources = {'ip-api.com':       (JSONIPSource, 'http://ip-api.com/json', 'ip'),
+                        'ifconfig.me':      (JSONIPSource, 'http://ifconfig.me/all.json', 'ip_addr'),
+                        'ifconfig.co':      (JSONIPSource, 'http://ifconfig.co/all.json', 'X-Real-Ip'),
+                        'ipinfo.io':        (JSONIPSource, 'http://ipinfo.io/json', 'ip'),
+                        'ipinfo.org':       (JSONIPSource, 'http://ipinfo.org/json', 'ip'),
+                        'trackip.net':      (JSONIPSource, 'http://www.trackip.net/ip?json', 'ip'),
+                        'httpbin.org':      (JSONIPSource, 'http://httpbin.org/get', 'origin'),
+                        'wtfismyip.com':    (JSONIPSource, 'http://wtfismyip.com/json', 'YourFuckingIPAddress'),
                         'ipecho.net':       (SimpleIPSource, 'http://ipecho.net/plain'),
                         'eth0.me':          (SimpleIPSource, 'http://eth0.me/'),
                         'ip.appstop.com':   (SimpleIPSource, 'http://ip.appspot.com/'),
