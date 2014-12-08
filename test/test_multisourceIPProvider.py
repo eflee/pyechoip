@@ -1,23 +1,26 @@
-from unittest import TestCase
-from gimmeip.sources import SourceFactory, SimpleIPSource, JSONIPSource
-from gimmeip.providers import MultisourceIPProvider, InsufficientSourcesForAgreementError
+import unittest
+import time
+
 import requests_mock
 from ipaddress import IPv4Address
-import time
+
+import gimmeip.sources
+import gimmeip.providers
+
 
 __docformat__ = 'restructuredtext en'
 __author__ = 'eflee'
 
 
-class TestMultisourceIPProvider(TestCase):
+class TestMultisourceIPProvider(unittest.TestCase):
     @requests_mock.Mocker()
     def test_add_source(self, m):
         m.register_uri('GET', 'https://fake-ip-url.com/', text='127.0.0.1\n')
         m.register_uri('GET', 'https://fake-ip-json-url.com/', text='{"countryCode":"US", "query":"127.0.0.1"}')
-        fac = SourceFactory(use_builtins=False)
-        fac.add_source(SimpleIPSource, 'https://fake-ip-url.com/')
-        fac.add_source(JSONIPSource, 'https://fake-ip-json-url.com/', 'query')
-        ipp = MultisourceIPProvider()
+        fac = gimmeip.sources.SourceFactory(use_builtins=False)
+        fac.add_source(gimmeip.sources.SimpleIPSource, 'https://fake-ip-url.com/')
+        fac.add_source(gimmeip.sources.JSONIPSource, 'https://fake-ip-json-url.com/', 'query')
+        ipp = gimmeip.providers.MultisourceIPProvider()
         for source in fac.get_sources():
             ipp.add_source(source)
         self.assertEquals(fac.num_sources, ipp.num_sources)
@@ -26,10 +29,10 @@ class TestMultisourceIPProvider(TestCase):
     def test_get_ip(self, m):
         m.register_uri('GET', 'https://fake-ip-url.com/', text='127.0.0.1\n')
         m.register_uri('GET', 'https://fake-ip-json-url.com/', text='{"countryCode":"US", "query":"127.0.0.1"}')
-        fac = SourceFactory(use_builtins=False)
-        fac.add_source(SimpleIPSource, 'https://fake-ip-url.com/')
-        fac.add_source(JSONIPSource, 'https://fake-ip-json-url.com/', 'query')
-        ipp = MultisourceIPProvider()
+        fac = gimmeip.sources.SourceFactory(use_builtins=False)
+        fac.add_source(gimmeip.sources.SimpleIPSource, 'https://fake-ip-url.com/')
+        fac.add_source(gimmeip.sources.JSONIPSource, 'https://fake-ip-json-url.com/', 'query')
+        ipp = gimmeip.providers.MultisourceIPProvider()
         for source in fac.get_sources():
             ipp.add_source(source)
         self.assertEquals(ipp.get_ip(), IPv4Address('127.0.0.1'))
@@ -38,23 +41,23 @@ class TestMultisourceIPProvider(TestCase):
     def test_get_ip_non_agreement(self, m):
         m.register_uri('GET', 'https://fake-ip-url.com/', text='127.0.0.2\n')
         m.register_uri('GET', 'https://fake-ip-json-url.com/', text='{"countryCode":"US", "query":"127.0.0.1"}')
-        fac = SourceFactory(use_builtins=False)
-        fac.add_source(SimpleIPSource, 'https://fake-ip-url.com/')
-        fac.add_source(JSONIPSource, 'https://fake-ip-json-url.com/', 'query')
-        ipp = MultisourceIPProvider()
+        fac = gimmeip.sources.SourceFactory(use_builtins=False)
+        fac.add_source(gimmeip.sources.SimpleIPSource, 'https://fake-ip-url.com/')
+        fac.add_source(gimmeip.sources.JSONIPSource, 'https://fake-ip-json-url.com/', 'query')
+        ipp = gimmeip.providers.MultisourceIPProvider()
         for source in fac.get_sources():
             ipp.add_source(source)
-        self.assertRaises(InsufficientSourcesForAgreementError, ipp.get_ip)
+        self.assertRaises(gimmeip.providers.InsufficientSourcesForAgreementError, ipp.get_ip)
 
     @requests_mock.Mocker()
     def test_get_info(self, m):
         m.register_uri('GET', 'https://fake-ip-json-url.com/', text='{"countryCode":"US", "query":"127.0.0.1"}')
         m.register_uri('GET', 'https://fake-ip-json-url2.com/', text='{"countryCode2":"US", "query":"127.0.0.1"}')
-        fac = SourceFactory(use_builtins=False)
-        fac.add_source(JSONIPSource, 'https://fake-ip-json-url.com/', 'query')
-        fac.add_source(JSONIPSource, 'https://fake-ip-json-url2.com/', 'query')
+        fac = gimmeip.sources.SourceFactory(use_builtins=False)
+        fac.add_source(gimmeip.sources.JSONIPSource, 'https://fake-ip-json-url.com/', 'query')
+        fac.add_source(gimmeip.sources.JSONIPSource, 'https://fake-ip-json-url2.com/', 'query')
 
-        ipp = MultisourceIPProvider()
+        ipp = gimmeip.providers.MultisourceIPProvider()
         for source in fac.get_sources():
             ipp.add_source(source)
         self.assertEquals(ipp.get_info(), {'countryCode': 'US', 'countryCode2': 'US'})
@@ -63,14 +66,14 @@ class TestMultisourceIPProvider(TestCase):
     def test_get_info_non_agreement(self, m):
         m.register_uri('GET', 'https://fake-ip-json-url.com/', text='{"countryCode":"US", "query":"127.0.0.1"}')
         m.register_uri('GET', 'https://fake-ip-json-url2.com/', text='{"countryCode2":"US", "query":"127.0.0.2"}')
-        fac = SourceFactory(use_builtins=False)
-        fac.add_source(JSONIPSource, 'https://fake-ip-json-url.com/', 'query')
-        fac.add_source(JSONIPSource, 'https://fake-ip-json-url2.com/', 'query')
+        fac = gimmeip.sources.SourceFactory(use_builtins=False)
+        fac.add_source(gimmeip.sources.JSONIPSource, 'https://fake-ip-json-url.com/', 'query')
+        fac.add_source(gimmeip.sources.JSONIPSource, 'https://fake-ip-json-url2.com/', 'query')
 
-        ipp = MultisourceIPProvider()
+        ipp = gimmeip.providers.MultisourceIPProvider()
         for source in fac.get_sources():
             ipp.add_source(source)
-        self.assertRaises(InsufficientSourcesForAgreementError, ipp.get_info)
+        self.assertRaises(gimmeip.providers.InsufficientSourcesForAgreementError, ipp.get_info)
 
     @requests_mock.Mocker()
     def test_get_info_with_required_keys(self, m):
@@ -78,11 +81,11 @@ class TestMultisourceIPProvider(TestCase):
         m.register_uri('GET', 'https://fake-ip-json-url2.com/', text='{"whoami":"US", "whoami2":"US", "anykey1":"1", \
                                                                       "query":"127.0.0.1"}')
 
-        fac = SourceFactory(use_builtins=False)
-        fac.add_source(JSONIPSource, 'https://fake-ip-json-url.com/', 'query')
-        fac.add_source(JSONIPSource, 'https://fake-ip-json-url2.com/', 'query')
+        fac = gimmeip.sources.SourceFactory(use_builtins=False)
+        fac.add_source(gimmeip.sources.JSONIPSource, 'https://fake-ip-json-url.com/', 'query')
+        fac.add_source(gimmeip.sources.JSONIPSource, 'https://fake-ip-json-url2.com/', 'query')
 
-        ipp = MultisourceIPProvider()
+        ipp = gimmeip.providers.MultisourceIPProvider()
         for source in fac.get_sources():
             ipp.add_source(source)
 
@@ -95,11 +98,11 @@ class TestMultisourceIPProvider(TestCase):
         m.register_uri('GET', 'https://fake-ip-json-url2.com/', text='{"whoami":"US", "whoami2":"US", "anykey1":"1", \
                                                                       "query":"127.0.0.1"}')
 
-        fac = SourceFactory(use_builtins=False)
-        fac.add_source(JSONIPSource, 'https://fake-ip-json-url.com/', 'query')
-        fac.add_source(JSONIPSource, 'https://fake-ip-json-url2.com/', 'query')
+        fac = gimmeip.sources.SourceFactory(use_builtins=False)
+        fac.add_source(gimmeip.sources.JSONIPSource, 'https://fake-ip-json-url.com/', 'query')
+        fac.add_source(gimmeip.sources.JSONIPSource, 'https://fake-ip-json-url2.com/', 'query')
 
-        ipp = MultisourceIPProvider()
+        ipp = gimmeip.providers.MultisourceIPProvider()
         for source in fac.get_sources():
             ipp.add_source(source)
 
@@ -110,10 +113,10 @@ class TestMultisourceIPProvider(TestCase):
     def test_invalidate_cache(self, m):
         m.register_uri('GET', 'https://fake-ip-url.com/', text='127.0.0.1\n')
         m.register_uri('GET', 'https://fake-ip-json-url.com/', text='{"countryCode":"US", "query":"127.0.0.1"}')
-        fac = SourceFactory(use_builtins=False)
-        fac.add_source(SimpleIPSource, 'https://fake-ip-url.com/')
-        fac.add_source(JSONIPSource, 'https://fake-ip-json-url.com/', 'query')
-        ipp = MultisourceIPProvider()
+        fac = gimmeip.sources.SourceFactory(use_builtins=False)
+        fac.add_source(gimmeip.sources.SimpleIPSource, 'https://fake-ip-url.com/')
+        fac.add_source(gimmeip.sources.JSONIPSource, 'https://fake-ip-json-url.com/', 'query')
+        ipp = gimmeip.providers.MultisourceIPProvider()
         for source in fac.get_sources():
             ipp.add_source(source)
 
@@ -127,14 +130,14 @@ class TestMultisourceIPProvider(TestCase):
     def test_invalidate_cache_non_agreement(self, m):
         m.register_uri('GET', 'https://fake-ip-url.com/', text='127.0.0.1\n')
         m.register_uri('GET', 'https://fake-ip-json-url.com/', text='{"countryCode":"US", "query":"127.0.0.1"}')
-        fac = SourceFactory(use_builtins=False)
-        fac.add_source(SimpleIPSource, 'https://fake-ip-url.com/')
-        fac.add_source(JSONIPSource, 'https://fake-ip-json-url.com/', 'query')
-        ipp = MultisourceIPProvider()
+        fac = gimmeip.sources.SourceFactory(use_builtins=False)
+        fac.add_source(gimmeip.sources.SimpleIPSource, 'https://fake-ip-url.com/')
+        fac.add_source(gimmeip.sources.JSONIPSource, 'https://fake-ip-json-url.com/', 'query')
+        ipp = gimmeip.providers.MultisourceIPProvider()
         for source in fac.get_sources():
             ipp.add_source(source)
 
-        with self.assertRaises(InsufficientSourcesForAgreementError):
+        with self.assertRaises(gimmeip.providers.InsufficientSourcesForAgreementError):
             self.assertEquals(ipp.get_ip(), IPv4Address('127.0.0.1'))
             m.register_uri('GET', 'https://fake-ip-url.com/', text='127.0.0.1\n')
             m.register_uri('GET', 'https://fake-ip-json-url.com/', text='{"countryCode":"US", "query":"127.0.0.2"}')
@@ -145,10 +148,10 @@ class TestMultisourceIPProvider(TestCase):
     def test_cache(self, m):
         m.register_uri('GET', 'https://fake-ip-url.com/', text='127.0.0.1\n')
         m.register_uri('GET', 'https://fake-ip-json-url.com/', text='{"countryCode":"US", "query":"127.0.0.1"}')
-        fac = SourceFactory(use_builtins=False)
-        fac.add_source(SimpleIPSource, 'https://fake-ip-url.com/')
-        fac.add_source(JSONIPSource, 'https://fake-ip-json-url.com/', 'query')
-        ipp = MultisourceIPProvider(cache_ttl=2)
+        fac = gimmeip.sources.SourceFactory(use_builtins=False)
+        fac.add_source(gimmeip.sources.SimpleIPSource, 'https://fake-ip-url.com/')
+        fac.add_source(gimmeip.sources.JSONIPSource, 'https://fake-ip-json-url.com/', 'query')
+        ipp = gimmeip.providers.MultisourceIPProvider(cache_ttl=2)
         for source in fac.get_sources():
             ipp.add_source(source)
 
@@ -168,10 +171,10 @@ class TestMultisourceIPProvider(TestCase):
     def test_cache_non_agreement(self, m):
         m.register_uri('GET', 'https://fake-ip-url.com/', text='127.0.0.1\n')
         m.register_uri('GET', 'https://fake-ip-json-url.com/', text='{"countryCode":"US", "query":"127.0.0.1"}')
-        fac = SourceFactory(use_builtins=False)
-        fac.add_source(SimpleIPSource, 'https://fake-ip-url.com/')
-        fac.add_source(JSONIPSource, 'https://fake-ip-json-url.com/', 'query')
-        ipp = MultisourceIPProvider(cache_ttl=2)
+        fac = gimmeip.sources.SourceFactory(use_builtins=False)
+        fac.add_source(gimmeip.sources.SimpleIPSource, 'https://fake-ip-url.com/')
+        fac.add_source(gimmeip.sources.JSONIPSource, 'https://fake-ip-json-url.com/', 'query')
+        ipp = gimmeip.providers.MultisourceIPProvider(cache_ttl=2)
         for source in fac.get_sources():
             ipp.add_source(source)
 
@@ -180,7 +183,7 @@ class TestMultisourceIPProvider(TestCase):
         m.register_uri('GET', 'https://fake-ip-url.com/', text='127.0.0.1\n')
         m.register_uri('GET', 'https://fake-ip-json-url.com/', text='{"countryCode":"US", "query":"127.0.0.2"}')
 
-        with self.assertRaises(InsufficientSourcesForAgreementError):
+        with self.assertRaises(gimmeip.providers.InsufficientSourcesForAgreementError):
             self.assertTrue(ipp.is_cache_valid())
             while time.time() - timestamp < 3:
                 time.sleep(0.5)

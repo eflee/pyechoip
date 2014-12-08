@@ -1,12 +1,13 @@
 __docformat__ = 'restructuredtext en'
 __author__ = 'eflee'
 
-import zope.interface
-import requests
-import ipaddress
 import copy
 import random
 import sys
+
+import zope.interface
+import requests
+import ipaddress
 
 
 class IIPSource(zope.interface.Interface):
@@ -96,25 +97,25 @@ class JSONIPSource(SimpleIPSource):
             raw_ip = raw_ip[0]
         self._ip = ipaddress.ip_address(raw_ip)
         self._info = raw_response
-        del(self._info[self._ip_key])
+        del (self._info[self._ip_key])
 
 
 class SourceFactory(object):
-    _builtin_sources = {'ip-api.com':       (JSONIPSource, 'http://ip-api.com/json', 'ip'),
-                        'ifconfig.me':      (JSONIPSource, 'http://ifconfig.me/all.json', 'ip_addr'),
-                        'ifconfig.co':      (JSONIPSource, 'http://ifconfig.co/all.json', 'X-Real-Ip'),
-                        'ipinfo.io':        (JSONIPSource, 'http://ipinfo.io/json', 'ip'),
-                        'ipinfo.org':       (JSONIPSource, 'http://ipinfo.org/json', 'ip'),
-                        'trackip.net':      (JSONIPSource, 'http://www.trackip.net/ip?json', 'ip'),
-                        'httpbin.org':      (JSONIPSource, 'http://httpbin.org/get', 'origin'),
-                        'wtfismyip.com':    (JSONIPSource, 'http://wtfismyip.com/json', 'YourFuckingIPAddress'),
-                        'ipecho.net':       (SimpleIPSource, 'http://ipecho.net/plain'),
-                        'eth0.me':          (SimpleIPSource, 'http://eth0.me/'),
-                        'ip.appstop.com':   (SimpleIPSource, 'http://ip.appspot.com/'),
-                        'l2.io':            (SimpleIPSource, 'http://l2.io/ip'),
-                        'curlmyip.com':     (SimpleIPSource, 'http://curlmyip.com/'),
-                        'icanhazip.com':    (SimpleIPSource, 'http://icanhazip.com/'),
-                        }
+    _builtin_sources = {'ip-api.com': (JSONIPSource, 'http://ip-api.com/json', 'ip'),
+                        'ifconfig.me': (JSONIPSource, 'http://ifconfig.me/all.json', 'ip_addr'),
+                        'ifconfig.co': (JSONIPSource, 'http://ifconfig.co/all.json', 'X-Real-Ip'),
+                        'ipinfo.io': (JSONIPSource, 'http://ipinfo.io/json', 'ip'),
+                        'ipinfo.org': (JSONIPSource, 'http://ipinfo.org/json', 'ip'),
+                        'trackip.net': (JSONIPSource, 'http://www.trackip.net/ip?json', 'ip'),
+                        'httpbin.org': (JSONIPSource, 'http://httpbin.org/get', 'origin'),
+                        'wtfismyip.com': (JSONIPSource, 'http://wtfismyip.com/json', 'YourFuckingIPAddress'),
+                        'ipecho.net': (SimpleIPSource, 'http://ipecho.net/plain'),
+                        'eth0.me': (SimpleIPSource, 'http://eth0.me/'),
+                        'ip.appstop.com': (SimpleIPSource, 'http://ip.appspot.com/'),
+                        'l2.io': (SimpleIPSource, 'http://l2.io/ip'),
+                        'curlmyip.com': (SimpleIPSource, 'http://curlmyip.com/'),
+                        'icanhazip.com': (SimpleIPSource, 'http://icanhazip.com/'),
+    }
 
     def __init__(self, use_builtins=True):
         """
@@ -152,7 +153,7 @@ class SourceFactory(object):
         :rtype: generator
         """
         if types_list and not isinstance(types_list, (tuple, list)):
-                types_list = [types_list]
+            types_list = [types_list]
 
         sources = list(self._sources)
         random.shuffle(sources)

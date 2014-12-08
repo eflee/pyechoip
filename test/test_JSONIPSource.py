@@ -1,15 +1,18 @@
-import gimmeip.sources
-from unittest import TestCase
+import unittest
+
 import requests
 import requests_mock
-from ipaddress import IPv4Address
-from mock import patch
+import ipaddress
+import mock
+
+import gimmeip.sources
+
 
 __docformat__ = 'restructuredtext en'
 __author__ = 'eflee'
 
 
-class TestJSONBasedIPSource(TestCase):
+class TestJSONBasedIPSource(unittest.TestCase):
     def setUp(self):
         self.source = gimmeip.sources.JSONIPSource('https://fake-ip-url.com/', 'query')
 
@@ -17,8 +20,8 @@ class TestJSONBasedIPSource(TestCase):
     def test_ip_success(self, m):
         """Tests that a proper response from the URL yields the right interface"""
         m.register_uri('GET', 'https://fake-ip-url.com/', text='{"countryCode": "US", "query": "127.0.0.1"}')
-        self.assertIsInstance(self.source.ip, IPv4Address, "IP address is parsable as IPv4")
-        self.assertEquals(IPv4Address('127.0.0.1'), self.source.ip)
+        self.assertIsInstance(self.source.ip, ipaddress.IPv4Address, "IP address is parsable as IPv4")
+        self.assertEquals(ipaddress.IPv4Address('127.0.0.1'), self.source.ip)
 
     @requests_mock.Mocker()
     def test_info_success(self, m):
@@ -40,7 +43,7 @@ class TestJSONBasedIPSource(TestCase):
             # noinspection PyStatementEffect
             self.source.info
 
-    @patch('requests.get')
+    @mock.patch('requests.get')
     def test_no_response(self, m):
         """Tests proper failure is a connection error occurs"""
         m.side_effect = requests.ConnectionError('ConnectionError')

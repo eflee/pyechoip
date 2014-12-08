@@ -1,13 +1,16 @@
 __docformat__ = 'restructuredtext en'
 __author__ = 'eflee'
 
-import zope.interface
-import ipaddress
-import sources
 import collections
 import time
 import random
+
+import zope.interface
+import ipaddress
 import requests
+
+import sources
+
 
 
 # noinspection PyMethodMayBeStatic
@@ -134,7 +137,7 @@ class IPProvider(object):
         Evaluates the validity of the cache
         """
         return time.time() - self._cache_timestamp < self._cache_ttl \
-            and self._cache_info is not None and self._cache_ip is not None
+               and self._cache_info is not None and self._cache_ip is not None
 
     @property
     def num_sources(self):
