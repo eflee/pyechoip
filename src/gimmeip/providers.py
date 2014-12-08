@@ -105,7 +105,7 @@ class IPProvider(object):
                 print e
                 continue
 
-        return None, None
+        raise NullResponseFromSourcesError("No sources returned a valid response.")
 
     @staticmethod
     def _verify_required_keys(info, required_info_keys):
@@ -137,3 +137,60 @@ class IPProvider(object):
     @property
     def num_sources(self):
         return len(self._sources)
+
+
+class MultisourceIPProvider(IPProvider):
+    def __init__(self, source_list=None, cache_ttl=3600, min_source_agreement=2):
+        """
+        The IPProvider takes one or more IPSources and returns the results from them if the minimum number of sources
+        are in agreement regard the external IP.
+        Additional info from multiple providers is extended into one dictionary.
+        If one provider does not respond it will move on to the next. It ensures that the age of the
+        response on no older than the cache_ttl.
+
+        :param source_list: The list of sources to bootstrap the provider with
+        :type source_list: list of IIPSource providers
+        :param cache_ttl: the seconds the ip cache remains valid
+        :param min_source_agreement: The minimum number of source that must be in agreement for an ip_fetch
+        :type min_source_agreement: int
+        """
+        super(MultisourceIPProvider, self).__init__(source_list, cache_ttl)
+        self._min_source_agreement = min_source_agreement
+
+    def _fetch_from_sources(self, required_info_keys=None):
+        if self.num_sources < self._min_source_agreement:
+            raise InsufficientSourcesForAgreementError("{} sources are required but only {} configured".format(
+                self._min_source_agreement, self.num_sources))
+        infos = dict()
+        ips = collections.defaultdict(list)
+        sources = self._sources.keys()
+        random.shuffle(sources)
+        for source in sources:
+            try:
+                source.refresh()
+                ip = source.ip
+                info = source.info
+
+                if ip not in ips.keys():
+                    ips[ip].append(source)
+                    infos[source] = info
+                else:
+                    for src in ips[ip]:
+                        info.update(infos[src])
+
+                    if not required_info_keys or self._verify_required_keys(info, required_info_keys):
+                        return ip, info
+                    else:
+                        infos[source] = source.info
+            except (ValueError, requests.ConnectionError):
+                continue
+
+        raise InsufficientSourcesForAgreementError("An insufficient number of sources were able to agree.")
+
+
+class InsufficientSourcesForAgreementError(Exception):
+    pass
+
+
+class NullResponseFromSourcesError(Exception):
+    pass

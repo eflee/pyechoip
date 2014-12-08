@@ -1,9 +1,11 @@
 from unittest import TestCase
 from gimmeip.sources import SourceFactory, SimpleIPSource, JSONIPSource
-from gimmeip.providers import IPProvider
+from gimmeip.providers import IPProvider, NullResponseFromSourcesError
 import requests_mock
 from ipaddress import IPv4Address
 import time
+from mock import patch
+import requests
 
 __docformat__ = 'restructuredtext en'
 __author__ = 'eflee'
@@ -43,6 +45,19 @@ class TestIPProvider(TestCase):
         for source in fac.get_sources():
             ipp.add_source(source)
         self.assertEquals(ipp.get_info(), {'countryCode':'US'})
+
+    @patch('requests.get')
+    def test_no_response(self, m):
+        """Tests proper failure if a connection error occurs"""
+        m.side_effect = requests.ConnectionError('ConnectionError')
+        m.register_uri('GET', 'https://fake-ip-url.com/', text='Fail')
+        with self.assertRaises(NullResponseFromSourcesError):
+            fac = SourceFactory(use_builtins=False)
+            fac.add_source(JSONIPSource, 'https://fake-ip-url.com/', 'query')
+            ipp = IPProvider()
+            for source in fac.get_sources():
+                ipp.add_source(source)
+            self.assertEquals(ipp.get_ip(), IPv4Address('127.0.0.1'))
 
     @requests_mock.Mocker()
     def test_get_info_with_required_keys(self, m):
