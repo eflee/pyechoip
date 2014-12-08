@@ -35,7 +35,7 @@ class TestJSONBasedIPSource(unittest.TestCase):
         """Tests proper failure if crap data is returned"""
         m.register_uri('GET', 'https://fake-ip-url.com/', text="Slartibartfast")
         with self.assertRaises(ValueError):
-            self.source.refresh()
+            self.source._fetch()
         with self.assertRaises(ValueError):
             # noinspection PyStatementEffect
             self.source.ip
@@ -50,7 +50,7 @@ class TestJSONBasedIPSource(unittest.TestCase):
         m.register_uri('GET', 'https://fake-ip-url.com/', text='Fail')
         with self.assertRaises(requests.ConnectionError):
             # noinspection PyStatementEffect
-            self.source.refresh()
+            self.source._fetch()
         with self.assertRaises(requests.ConnectionError):
             # noinspection PyStatementEffect
             self.source.ip
@@ -64,7 +64,7 @@ class TestJSONBasedIPSource(unittest.TestCase):
         m.register_uri('GET', 'https://fake-ip-url.com/', text='{"countryCode":"US", "query":"127.0.0.1"}')
         self.assertIsNone(self.source._ip)
         self.assertIsNone(self.source._info)
-        self.source.refresh()
+        self.source._fetch()
         self.assertIsNotNone(self.source.ip)
         self.assertIsNotNone(self.source.info)
 

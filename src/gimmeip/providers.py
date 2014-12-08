@@ -98,7 +98,7 @@ class IPProvider(object):
         random.shuffle(srces)
         for source in srces:
             try:
-                source.refresh()
+                source._fetch()
 
                 ip = source.ip
                 info = source.info
@@ -173,7 +173,7 @@ class MultisourceIPProvider(IPProvider):
         random.shuffle(srces)
         for source in srces:
             try:
-                source.refresh()
+                source._fetch()
                 ip = source.ip
                 info = source.info
 

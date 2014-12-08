@@ -34,7 +34,7 @@ class TestTextBasedIPSource(unittest.TestCase):
         """Tests proper failure if crap data is returned"""
         m.register_uri('GET', 'https://fake-ip-url.com/', text="Slartibartfast")
         with self.assertRaises(ValueError):
-            self.source.refresh()
+            self.source._fetch()
         with self.assertRaises(ValueError):
             # noinspection PyStatementEffect
             self.source.ip
@@ -49,7 +49,7 @@ class TestTextBasedIPSource(unittest.TestCase):
         m.register_uri('GET', 'https://fake-ip-url.com/', text='Fail')
         with self.assertRaises(requests.ConnectionError):
             # noinspection PyStatementEffect
-            self.source.refresh()
+            self.source._fetch()
         with self.assertRaises(requests.ConnectionError):
             # noinspection PyStatementEffect
             self.source.ip
@@ -63,7 +63,7 @@ class TestTextBasedIPSource(unittest.TestCase):
         m.register_uri('GET', 'https://fake-ip-url.com/', text='127.0.0.1\n')
         self.assertIsNone(self.source._ip)
         self.assertIsNone(self.source._info)
-        self.source.refresh()
+        self.source._fetch()
         self.assertIsNotNone(self.source.ip)
         self.assertIsNotNone(self.source.info)
 

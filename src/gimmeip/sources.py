@@ -19,10 +19,6 @@ class IIPSource(zope.interface.Interface):
     ip = zope.interface.Attribute("""The current external IP address""")
     info = zope.interface.Attribute("""A Dict of any other information returned by the API""")
 
-    # noinspection PyMethodMayBeStatic
-    def refresh(self):
-        """ Forces a refresh of the stored data """
-
 
 class SimpleIPSource(object):
     zope.interface.implements(IIPSource)
@@ -46,7 +42,7 @@ class SimpleIPSource(object):
         :return: The IP
         :rtype: ipaddress.IPv4Address or ipaddress.IPv6Address
         """
-        self.refresh()
+        self._fetch()
         return copy.deepcopy(self._ip)
 
     @property
@@ -56,10 +52,10 @@ class SimpleIPSource(object):
         :return: any additional information returned by the API
         :rtype: dict
         """
-        self.refresh()
+        self._fetch()
         return self._info
 
-    def refresh(self):
+    def _fetch(self):
         """
         Performs a refresh from source
         :return: None
@@ -84,7 +80,7 @@ class JSONIPSource(SimpleIPSource):
         super(JSONIPSource, self).__init__(ip_url)
         self._ip_key = ip_key
 
-    def refresh(self):
+    def _fetch(self):
         """
         Performs a refresh from source
         :return: None
