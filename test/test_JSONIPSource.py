@@ -79,13 +79,3 @@ class TestJSONBasedIPSource(TestCase):
         self.assertIsNone(self.source._info)
         self.assertIsNotNone(self.source.info)
 
-    @requests_mock.Mocker()
-    def test_refresh_preserve(self, m):
-        """Tests that without a forced refresh the source returns the caches results"""
-        m.register_uri('GET', 'https://fake-ip-url.com/', text='{"countryCode":"US", "query":"127.0.0.1"}')
-        self.assertEquals(IPv4Address('127.0.0.1'), self.source.ip)
-        m.register_uri('GET', 'https://fake-ip-url.com/', text='{"countryCode":"US", "query":"127.0.0.2"}')
-        self.assertEquals(IPv4Address('127.0.0.1'), self.source.ip)
-        self.source.refresh()
-        self.assertEquals(IPv4Address('127.0.0.2'), self.source.ip)
-

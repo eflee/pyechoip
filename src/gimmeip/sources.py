@@ -45,8 +45,7 @@ class SimpleIPSource(object):
         :return: The IP
         :rtype: ipaddress.IPv4Address or ipaddress.IPv6Address
         """
-        if self._ip is None:
-            self.refresh()
+        self.refresh()
         return copy.deepcopy(self._ip)
 
     @property
@@ -56,8 +55,7 @@ class SimpleIPSource(object):
         :return: any additional information returned by the API
         :rtype: dict
         """
-        if self._info is None:
-            self.refresh()
+        self.refresh()
         return self._info
 
     def refresh(self):
