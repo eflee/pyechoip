@@ -107,7 +107,6 @@ class IPProvider(object):
                     return ip, info
 
             except (ValueError, requests.ConnectionError) as e:
-                print e
                 continue
 
         raise NullResponseFromSourcesError("No sources returned a valid response.")
