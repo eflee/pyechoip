@@ -5,7 +5,7 @@ import requests_mock
 import ipaddress
 import mock
 
-import gimmeip.sources
+import echoip.sources
 
 
 __docformat__ = 'restructuredtext en'
@@ -14,7 +14,7 @@ __author__ = 'eflee'
 
 class TestJSONBasedIPSource(unittest.TestCase):
     def setUp(self):
-        self.source = gimmeip.sources.JSONIPSource('https://fake-ip-url.com/', 'query')
+        self.source = echoip.sources.JSONIPSource('https://fake-ip-url.com/', 'query')
 
     @requests_mock.Mocker()
     def test_ip_success(self, m):

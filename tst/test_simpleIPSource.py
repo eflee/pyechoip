@@ -5,7 +5,7 @@ import requests_mock
 import ipaddress
 import mock
 
-import gimmeip.sources
+import echoip.sources
 
 __docformat__ = 'restructuredtext en'
 __author__ = 'eflee'
@@ -13,7 +13,7 @@ __author__ = 'eflee'
 
 class TestTextBasedIPSource(unittest.TestCase):
     def setUp(self):
-        self.source = gimmeip.sources.SimpleIPSource('https://fake-ip-url.com/')
+        self.source = echoip.sources.SimpleIPSource('https://fake-ip-url.com/')
 
     @requests_mock.Mocker()
     def test_ip_success(self, m):

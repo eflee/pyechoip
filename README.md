@@ -1,4 +1,4 @@
-PyGimmeIP
+PyEchoIP
 =========
 
 A generic library in python to get your external IP from sites around 
@@ -17,7 +17,7 @@ By default all providers cache a response from one hour (3600 seconds) and will
 self-invalidate in the event that time passes or the users requests an
 additional information key that is not present in the current cache. 
 
-Note: because different sources return differen supplement information to the IP
+Note: because different sources return different supplement information to the IP
 address, the users must know the key for which they're looking in order to make
 use of the information. This is one of the rougher edges of the code base 
 because it is on the boundary of the intended scope. If you need a feature, 
@@ -28,11 +28,11 @@ please ask for it.
 The standard IPProvider checks a single source, provides and caches the answer. 
 
 ```
-    In [1]: import gimmeip
-    In [2]: import gimmeip.sources
-    In [3]: import gimmeip.providers
-    In [4]: source_factory = gimmeip.sources.IPSourceFactory()
-    In [5]: provider = gimmeip.providers.IPProvider()
+    In [1]: import echoip
+    In [2]: import echoip.sources
+    In [3]: import echoip.providers
+    In [4]: source_factory = echoip.sources.IPSourceFactory()
+    In [5]: provider = echoip.providers.IPProvider()
     In [6]: for source in source_factory.get_sources():
        ...:     provider.add_source(source)
        ...:
@@ -43,8 +43,8 @@ The standard IPProvider checks a single source, provides and caches the answer.
 Usage:
 
     Type:            type
-    String form:     <class 'gimmeip.providers.IPProvider'>
-    Init definition: gimmeip.providers.IPProvider(self, source_list=None, cache_ttl=3600)
+    String form:     <class 'echoip.providers.IPProvider'>
+    Init definition: echoip.providers.IPProvider(self, source_list=None, cache_ttl=3600)
     Init docstring:
     The IPProvider takes one or more IPSources and returns the results from them . If one
     provider does not respond it will move on to the next. It ensures that the age of the
@@ -83,11 +83,11 @@ results.
 The provider is used the exact same way. 
 
 ```
-    In [1]: import gimmeip
-    In [2]: import gimmeip.sources
-    In [3]: import gimmeip.providers
-    In [4]: source_factory = gimmeip.sources.IPSourceFactory()
-    In [5]: provider = gimmeip.providers.MultisourceIPProvider
+    In [1]: import echoip
+    In [2]: import echoip.sources
+    In [3]: import echoip.providers
+    In [4]: source_factory = echoip.sources.IPSourceFactory()
+    In [5]: provider = echoip.providers.MultisourceIPProvider
     In [6]: for source in source_factory.get_sources():
        ...:     provider.add_source(source)
        ...:
@@ -98,9 +98,9 @@ The provider is used the exact same way.
 Usage: 
 
     Type:            type
-    String form:     <class 'gimmeip.providers.MultisourceIPProvider'>
-    File:            /Users/eflee/Development/pygimmeip/src/gimmeip/providers.py
-    Init definition: gimmeip.providers.MultisourceIPProvider(self, source_list=None, cache_ttl=3600, min_source_agreement=2)
+    String form:     <class 'echoip.providers.MultisourceIPProvider'>
+    File:            /Users/eflee/Development/pyechoip/src/echoip/providers.py
+    Init definition: echoip.providers.MultisourceIPProvider(self, source_list=None, cache_ttl=3600, min_source_agreement=2)
     Init docstring:
     The IPProvider takes one or more IPSources and returns the results from them if the minimum number of sources
     are in agreement regard the external IP.
@@ -152,8 +152,8 @@ IP. The class simply strips the whitespace from the string and validates it
 by instantiating it as an IPAddress.
 
 ```
-    In [1]: import gimmeip.sources
-    In [2]: source = gimmeip.sources.SimpleIPSource('http://curlmyip.com/')
+    In [1]: import echoip.sources
+    In [2]: source = echoip.sources.SimpleIPSource('http://curlmyip.com/')
     In [3]: source.ip
     Out[3]: IPv4Address('67.171.19.153')
 ```
@@ -169,8 +169,8 @@ returned by the API are boxed into a dict that is returned by the info
 attribute.
 
 ```
-    In [1]: import gimmeip.sources
-    In [2]: source = gimmeip.sources.JSONIPSource('http://ip-api.com/json', 'query')
+    In [1]: import echoip.sources
+    In [2]: source = echoip.sources.JSONIPSource('http://ip-api.com/json', 'query')
     In [3]: source.ip
     Out[3]: IPv4Address('67.171.19.153')
     In [4]: source.info
@@ -189,32 +189,32 @@ types. Two, it allows the user to instantiate with all of the built-in sites.
 Instantiating with custom resources:
 
 ```
-    In [1]: import gimmeip.sources
-    In [2]: fac = gimmeip.sources.IPSourceFactory(use_builtins=False)
-    In [3]: fac.add_source(gimmeip.sources.SimpleIPSource, 'http://10.0.0.1')
-    In [4]: fac.add_source(gimmeip.sources.JSONIPSource, 'http://10.0.0.2', 'ip')
+    In [1]: import echoip.sources
+    In [2]: fac = echoip.sources.IPSourceFactory(use_builtins=False)
+    In [3]: fac.add_source(echoip.sources.SimpleIPSource, 'http://10.0.0.1')
+    In [4]: fac.add_source(echoip.sources.JSONIPSource, 'http://10.0.0.2', 'ip')
     In [5]: fac.num_sources
     Out[5]: 2
     In [6]: [ src for src in fac.get_sources() ]
     Out[6]:
-    [<gimmeip.sources.SimpleIPSource at 0x10bb5d390>,
-    <gimmeip.sources.JSONIPSource at 0x10bb5d3d0>]
+    [<echoip.sources.SimpleIPSource at 0x10bb5d390>,
+    <echoip.sources.JSONIPSource at 0x10bb5d3d0>]
 ```
 
 Instantiation with built-ins (default):
     
 ```
-    In [1]: import gimmeip.sources
-    In [2]: fac = gimmeip.sources.IPSourceFactory()
+    In [1]: import echoip.sources
+    In [2]: fac = echoip.sources.IPSourceFactory()
     In [3]: fac.num_sources
     Out[3]: 14
     In [4]: [ src for src in fac.get_sources() ]
     Out[4]:
-    [<gimmeip.sources.JSONIPSource at 0x102f6b510>,
-    <gimmeip.sources.JSONIPSource at 0x102f6b550>,
-    <gimmeip.sources.JSONIPSource at 0x102f6b590>,
+    [<echoip.sources.JSONIPSource at 0x102f6b510>,
+    <echoip.sources.JSONIPSource at 0x102f6b550>,
+    <echoip.sources.JSONIPSource at 0x102f6b590>,
     ...
-    <gimmeip.sources.SimpleIPSource at 0x102f6b850>]
+    <echoip.sources.SimpleIPSource at 0x102f6b850>]
 ```
 
 

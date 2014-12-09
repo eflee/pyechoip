@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="pygimmeip",
+    name="pyechoip",
     version="1.0",
     packages=find_packages('src'),
     package_dir={'': 'src'},
@@ -20,6 +20,6 @@ setup(
     description="A generic library for getting your externally visible IP address in python.",
     license="Apache",
     keywords="ip network",
-    url="https://github.com/eflee/pygimmeip",  # project home page, if any
+    url="https://github.com/eflee/pyechoip",  # project home page, if any
     test_suite='tst',
 )

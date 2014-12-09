@@ -66,7 +66,7 @@ class IPProvider(object):
         if sources.IIPSource.providedBy(source):
             self._sources[source]['fail_count'] = 0
         else:
-            raise TypeError('gimmeip.sources.IIPSource must be provided by source argument.')
+            raise TypeError('echoip.sources.IIPSource must be provided by source argument.')
 
     def get_ip(self):
         """
