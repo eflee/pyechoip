@@ -1,3 +1,6 @@
+__docformat__ = 'restructuredtext en'
+__author__ = 'Eli Flesher <eli@eflee.us>'
+
 import unittest
 import time
 
@@ -6,10 +9,6 @@ from ipaddress import IPv4Address
 
 import echoip.sources
 import echoip.providers
-
-
-__docformat__ = 'restructuredtext en'
-__author__ = 'eflee'
 
 
 class TestMultisourceIPProvider(unittest.TestCase):

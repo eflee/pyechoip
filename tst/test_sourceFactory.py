@@ -1,11 +1,11 @@
+__docformat__ = 'restructuredtext en'
+__author__ = 'Eli Flesher <eli@eflee.us>'
+
 import unittest
 
 import requests_mock
 
 import echoip.sources
-
-__docformat__ = 'restructuredtext en'
-__author__ = 'eflee'
 
 
 class TestSourceFactory(unittest.TestCase):

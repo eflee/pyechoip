@@ -1,2 +1,2 @@
 __docformat__ = 'restructuredtext en'
-__author__ = 'eflee'
+__author__ = 'Eli Flesher <eli@eflee.us>'

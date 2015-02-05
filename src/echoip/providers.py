@@ -1,5 +1,5 @@
 __docformat__ = 'restructuredtext en'
-__author__ = 'eflee'
+__author__ = 'Eli Flesher <eli@eflee.us>'
 
 import collections
 import time
@@ -12,9 +12,8 @@ import requests
 import sources
 
 
-
 # noinspection PyMethodMayBeStatic
-class IIPProvider(zope.interface.Interface):
+class _IIPProvider(zope.interface.Interface):
     def add_source(self, source):
         """Adds a source to the set being used by the provider"""
 
@@ -32,7 +31,7 @@ class IIPProvider(zope.interface.Interface):
 
 
 class IPProvider(object):
-    zope.interface.implements(IIPProvider)
+    zope.interface.implements(_IIPProvider)
 
     def __init__(self, source_list=None, cache_ttl=3600):
         """
@@ -98,6 +97,7 @@ class IPProvider(object):
         random.shuffle(srces)
         for source in srces:
             try:
+                # noinspection PyProtectedMember
                 source._fetch()
 
                 ip = source.ip
@@ -106,7 +106,7 @@ class IPProvider(object):
                 if not required_info_keys or self._verify_required_keys(info, required_info_keys):
                     return ip, info
 
-            except (ValueError, requests.ConnectionError) as e:
+            except (ValueError, requests.ConnectionError):
                 continue
 
         raise NullResponseFromSourcesError("No sources returned a valid response.")
@@ -136,8 +136,11 @@ class IPProvider(object):
         """
         Evaluates the validity of the cache
         """
-        return time.time() - self._cache_timestamp < self._cache_ttl \
-               and self._cache_info is not None and self._cache_ip is not None
+        is_expired = time.time() - self._cache_timestamp < self._cache_ttl
+        cache_info_set = self._cache_info is not None
+        cache_ip_set = self._cache_ip is not None
+
+        return is_expired and cache_info_set and cache_ip_set
 
     @property
     def num_sources(self):
@@ -172,6 +175,7 @@ class MultisourceIPProvider(IPProvider):
         random.shuffle(srces)
         for source in srces:
             try:
+                # noinspection PyProtectedMember
                 source._fetch()
                 ip = source.ip
                 info = source.info

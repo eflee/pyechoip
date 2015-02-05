@@ -1,5 +1,5 @@
 __docformat__ = 'restructuredtext en'
-__author__ = 'eflee'
+__author__ = 'Eli Flesher <eli@eflee.us>'
 
 import copy
 import random
@@ -97,6 +97,7 @@ class JSONIPSource(SimpleIPSource):
 
 
 class IPSourceFactory(object):
+    # noinspection PyPep8
     _builtin_sources = {'ip-api.com': (JSONIPSource, 'http://ip-api.com/json', 'ip'),
                         'ifconfig.me': (JSONIPSource, 'http://ifconfig.me/all.json', 'ip_addr'),
                         'ifconfig.co': (JSONIPSource, 'http://ifconfig.co/all.json', 'X-Real-Ip'),
