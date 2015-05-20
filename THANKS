@@ -1,0 +1,31 @@
+PyEchoIP Thanks
+===============
+This library is of my own creation. However in order to make it immediately useful
+to its users, I have included in the code several 'default' providers that are well
+known and publicly available on the internet.
+
+I attempted to provide sources whose usage and licensing terms do not prohibit
+inclusion or who do not provide such terms. I have attempted to contact sources
+via contact instruction on each website or via whois lookup in order to offer
+them a chance to ask for omission.
+
+I have also attempted to create a library that will not abuse providers.
+
+If you are a provider and would like to be removed from inclusion, please file
+a github issue. I would also be happy to provide thanks/attribution by name.
+
+Built-in Sources
+----------------
+- curlmyip.com
+- eth0.me
+- httpbin.org
+- icanhazip.com
+- ifconfig.co
+- ifconfig.me
+- ip-api.com
+- ipecho.net
+- ipinfo.io
+- ipinfo.org
+- l2.io
+- trackip.net
+- wtfismyip.com

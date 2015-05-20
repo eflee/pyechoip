@@ -2,7 +2,7 @@ PyEchoIP
 =========
 
 A generic library in python to get your external IP from sites around 
-the internet in a consistant manner. Using zopes interfaces, allows the 
+the internet in a consistent manner. Using zopes interfaces, allows the 
 user to create their own sources. Features time-based caching, multi-source
 verification and other features.
 
@@ -218,15 +218,19 @@ Instantiation with built-ins (default):
 ```
 
 
-Built-in Sites
---------------
+Built-in Sources
+----------------
+
+Users of this library who choose to use the default sources are subject to the
+terms and limitations of those sources and are responsible for their conduct
+when using these services. 
 
 There are a number of built-in sites based on what was available after a few
-quick searches on Google. The following is a list of those included. If you are
+searches on Google. The following is a list of those included. If you are
 a site owner and would like your site removed from this library, please open
 an issue.
 
-Note that the default providers by default cache for one hour from one or two
+Note that the providers by default cache for one hour from one or two
 sites in this list.
 
 - curlmyip.com
@@ -236,7 +240,6 @@ sites in this list.
 - ifconfig.co
 - ifconfig.me
 - ip-api.com
-- ip.appstop.com
 - ipecho.net
 - ipinfo.io
 - ipinfo.org
