@@ -6,9 +6,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - None pending
 
-## [1.1] - 2014-12-09
+## [1.1] - 2015-05-20
 ### Added
-- None
+- Tons of module documentation
 
 ### Changed
 - ip property on sources and providers is now ip_address for PyLint
@@ -18,14 +18,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - None
 
 ### Removed
-- ip.appspot.com as default source as it appears to have gone offline
-
+- None
 
 ## [1.0] - 2014-12-09
 ### Added
 - First iteration of library with Providers and Sources
-- Default providers based on a google search of publicly available
-services.
 
 ### Changed
 - None
