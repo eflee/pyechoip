@@ -190,7 +190,7 @@ Instantiating with custom resources:
 
 ```
     In [1]: import echoip.sources
-    In [2]: fac = echoip.sources.IPSourceFactory(use_builtins=False)
+    In [2]: fac = echoip.sources.IPSourceFactory()
     In [3]: fac.add_source(echoip.sources.SimpleIPSource, 'http://10.0.0.1')
     In [4]: fac.add_source(echoip.sources.JSONIPSource, 'http://10.0.0.2', 'ip')
     In [5]: fac.num_sources
@@ -200,49 +200,3 @@ Instantiating with custom resources:
     [<echoip.sources.SimpleIPSource at 0x10bb5d390>,
     <echoip.sources.JSONIPSource at 0x10bb5d3d0>]
 ```
-
-Instantiation with built-ins (default):
-    
-```
-    In [1]: import echoip.sources
-    In [2]: fac = echoip.sources.IPSourceFactory()
-    In [3]: fac.num_sources
-    Out[3]: 14
-    In [4]: [ src for src in fac.get_sources() ]
-    Out[4]:
-    [<echoip.sources.JSONIPSource at 0x102f6b510>,
-    <echoip.sources.JSONIPSource at 0x102f6b550>,
-    <echoip.sources.JSONIPSource at 0x102f6b590>,
-    ...
-    <echoip.sources.SimpleIPSource at 0x102f6b850>]
-```
-
-
-Built-in Sources
-----------------
-
-Users of this library who choose to use the default sources are subject to the
-terms and limitations of those sources and are responsible for their conduct
-when using these services. 
-
-There are a number of built-in sites based on what was available after a few
-searches on Google. The following is a list of those included. If you are
-a site owner and would like your site removed from this library, please open
-an issue.
-
-Note that the providers by default cache for one hour from one or two
-sites in this list.
-
-- curlmyip.com
-- eth0.me
-- httpbin.org
-- icanhazip.com
-- ifconfig.co
-- ifconfig.me
-- ip-api.com
-- ipecho.net
-- ipinfo.io
-- ipinfo.org
-- l2.io
-- trackip.net
-- wtfismyip.com

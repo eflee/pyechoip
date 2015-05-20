@@ -123,34 +123,11 @@ class IPSourceFactory(object):
     """
     A Factory that can be used to generate IIPSource providers
     """
-    # noinspection PyPep8
-    _builtin_sources = {'ip-api.com': (JSONIPSource, 'http://ip-api.com/json', 'ip'),
-                        'ifconfig.me': (JSONIPSource, 'http://ifconfig.me/all.json', 'ip_addr'),
-                        'ifconfig.co': (JSONIPSource, 'http://ifconfig.co/all.json', 'X-Real-Ip'),
-                        'ipinfo.io': (JSONIPSource, 'http://ipinfo.io/json', 'ip'),
-                        'ipinfo.org': (JSONIPSource, 'http://ipinfo.org/json', 'ip'),
-                        'trackip.net': (JSONIPSource, 'http://www.trackip.net/ip?json', 'ip'),
-                        'httpbin.org': (JSONIPSource, 'http://httpbin.org/get', 'origin'),
-                        'wtfismyip.com': (JSONIPSource, 'http://wtfismyip.com/json',
-                                          'YourFuckingIPAddress'),
-                        'ipecho.net': (SimpleIPSource, 'http://ipecho.net/plain'),
-                        'eth0.me': (SimpleIPSource, 'http://eth0.me/'),
-                        'l2.io': (SimpleIPSource, 'http://l2.io/ip'),
-                        'curlmyip.com': (SimpleIPSource, 'http://curlmyip.com/'),
-                        'icanhazip.com': (SimpleIPSource, 'http://icanhazip.com/')}
-
-    def __init__(self, use_builtins=True):
+    def __init__(self):
         """
         A Factory that can be used to generate IIPSource providers
-        :param use_builtins: there are a number of built-in sources
-        available in this library, this option includes them by
-        default in the factory.
-        :type use_builtins: bool
         """
         self._sources = set()
-        if use_builtins:
-            for args in self._builtin_sources.values():
-                self.add_source(*args)
 
     def add_source(self, source_class, *constructor_args):
         """
@@ -170,7 +147,7 @@ class IPSourceFactory(object):
         Generates instantiated sources from the factory
         :param limit: the max number of sources to yield
         :type limit: int
-        :param types_list: filter by types so the constructor can be used to accomidate many types
+        :param types_list: filter by types so the constructor can be used to accommodate many types
         :type types_list: class or list of classes
         :return: Yields types added by add_source
         :rtype: generator

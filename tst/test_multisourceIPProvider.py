@@ -16,7 +16,7 @@ class TestMultisourceIPProvider(unittest.TestCase):
     def test_add_source(self, m):
         m.register_uri('GET', 'https://fake-ip-url.com/', text='127.0.0.1\n')
         m.register_uri('GET', 'https://fake-ip-json-url.com/', text='{"countryCode":"US", "query":"127.0.0.1"}')
-        fac = echoip.sources.IPSourceFactory(use_builtins=False)
+        fac = echoip.sources.IPSourceFactory()
         fac.add_source(echoip.sources.SimpleIPSource, 'https://fake-ip-url.com/')
         fac.add_source(echoip.sources.JSONIPSource, 'https://fake-ip-json-url.com/', 'query')
         ipp = echoip.providers.MultisourceIPProvider()
@@ -28,7 +28,7 @@ class TestMultisourceIPProvider(unittest.TestCase):
     def test_get_ip(self, m):
         m.register_uri('GET', 'https://fake-ip-url.com/', text='127.0.0.1\n')
         m.register_uri('GET', 'https://fake-ip-json-url.com/', text='{"countryCode":"US", "query":"127.0.0.1"}')
-        fac = echoip.sources.IPSourceFactory(use_builtins=False)
+        fac = echoip.sources.IPSourceFactory()
         fac.add_source(echoip.sources.SimpleIPSource, 'https://fake-ip-url.com/')
         fac.add_source(echoip.sources.JSONIPSource, 'https://fake-ip-json-url.com/', 'query')
         ipp = echoip.providers.MultisourceIPProvider()
@@ -40,7 +40,7 @@ class TestMultisourceIPProvider(unittest.TestCase):
     def test_get_ip_non_agreement(self, m):
         m.register_uri('GET', 'https://fake-ip-url.com/', text='127.0.0.2\n')
         m.register_uri('GET', 'https://fake-ip-json-url.com/', text='{"countryCode":"US", "query":"127.0.0.1"}')
-        fac = echoip.sources.IPSourceFactory(use_builtins=False)
+        fac = echoip.sources.IPSourceFactory()
         fac.add_source(echoip.sources.SimpleIPSource, 'https://fake-ip-url.com/')
         fac.add_source(echoip.sources.JSONIPSource, 'https://fake-ip-json-url.com/', 'query')
         ipp = echoip.providers.MultisourceIPProvider()
@@ -52,7 +52,7 @@ class TestMultisourceIPProvider(unittest.TestCase):
     def test_get_info(self, m):
         m.register_uri('GET', 'https://fake-ip-json-url.com/', text='{"countryCode":"US", "query":"127.0.0.1"}')
         m.register_uri('GET', 'https://fake-ip-json-url2.com/', text='{"countryCode2":"US", "query":"127.0.0.1"}')
-        fac = echoip.sources.IPSourceFactory(use_builtins=False)
+        fac = echoip.sources.IPSourceFactory()
         fac.add_source(echoip.sources.JSONIPSource, 'https://fake-ip-json-url.com/', 'query')
         fac.add_source(echoip.sources.JSONIPSource, 'https://fake-ip-json-url2.com/', 'query')
 
@@ -65,7 +65,7 @@ class TestMultisourceIPProvider(unittest.TestCase):
     def test_get_info_non_agreement(self, m):
         m.register_uri('GET', 'https://fake-ip-json-url.com/', text='{"countryCode":"US", "query":"127.0.0.1"}')
         m.register_uri('GET', 'https://fake-ip-json-url2.com/', text='{"countryCode2":"US", "query":"127.0.0.2"}')
-        fac = echoip.sources.IPSourceFactory(use_builtins=False)
+        fac = echoip.sources.IPSourceFactory()
         fac.add_source(echoip.sources.JSONIPSource, 'https://fake-ip-json-url.com/', 'query')
         fac.add_source(echoip.sources.JSONIPSource, 'https://fake-ip-json-url2.com/', 'query')
 
@@ -80,7 +80,7 @@ class TestMultisourceIPProvider(unittest.TestCase):
         m.register_uri('GET', 'https://fake-ip-json-url2.com/', text='{"whoami":"US", "whoami2":"US", "anykey1":"1", \
                                                                       "query":"127.0.0.1"}')
 
-        fac = echoip.sources.IPSourceFactory(use_builtins=False)
+        fac = echoip.sources.IPSourceFactory()
         fac.add_source(echoip.sources.JSONIPSource, 'https://fake-ip-json-url.com/', 'query')
         fac.add_source(echoip.sources.JSONIPSource, 'https://fake-ip-json-url2.com/', 'query')
 
@@ -97,7 +97,7 @@ class TestMultisourceIPProvider(unittest.TestCase):
         m.register_uri('GET', 'https://fake-ip-json-url2.com/', text='{"whoami":"US", "whoami2":"US", "anykey1":"1", \
                                                                       "query":"127.0.0.1"}')
 
-        fac = echoip.sources.IPSourceFactory(use_builtins=False)
+        fac = echoip.sources.IPSourceFactory()
         fac.add_source(echoip.sources.JSONIPSource, 'https://fake-ip-json-url.com/', 'query')
         fac.add_source(echoip.sources.JSONIPSource, 'https://fake-ip-json-url2.com/', 'query')
 
@@ -112,7 +112,7 @@ class TestMultisourceIPProvider(unittest.TestCase):
     def test_invalidate_cache(self, m):
         m.register_uri('GET', 'https://fake-ip-url.com/', text='127.0.0.1\n')
         m.register_uri('GET', 'https://fake-ip-json-url.com/', text='{"countryCode":"US", "query":"127.0.0.1"}')
-        fac = echoip.sources.IPSourceFactory(use_builtins=False)
+        fac = echoip.sources.IPSourceFactory()
         fac.add_source(echoip.sources.SimpleIPSource, 'https://fake-ip-url.com/')
         fac.add_source(echoip.sources.JSONIPSource, 'https://fake-ip-json-url.com/', 'query')
         ipp = echoip.providers.MultisourceIPProvider()
@@ -129,7 +129,7 @@ class TestMultisourceIPProvider(unittest.TestCase):
     def test_invalidate_cache_non_agreement(self, m):
         m.register_uri('GET', 'https://fake-ip-url.com/', text='127.0.0.1\n')
         m.register_uri('GET', 'https://fake-ip-json-url.com/', text='{"countryCode":"US", "query":"127.0.0.1"}')
-        fac = echoip.sources.IPSourceFactory(use_builtins=False)
+        fac = echoip.sources.IPSourceFactory()
         fac.add_source(echoip.sources.SimpleIPSource, 'https://fake-ip-url.com/')
         fac.add_source(echoip.sources.JSONIPSource, 'https://fake-ip-json-url.com/', 'query')
         ipp = echoip.providers.MultisourceIPProvider()
@@ -147,7 +147,7 @@ class TestMultisourceIPProvider(unittest.TestCase):
     def test_cache(self, m):
         m.register_uri('GET', 'https://fake-ip-url.com/', text='127.0.0.1\n')
         m.register_uri('GET', 'https://fake-ip-json-url.com/', text='{"countryCode":"US", "query":"127.0.0.1"}')
-        fac = echoip.sources.IPSourceFactory(use_builtins=False)
+        fac = echoip.sources.IPSourceFactory()
         fac.add_source(echoip.sources.SimpleIPSource, 'https://fake-ip-url.com/')
         fac.add_source(echoip.sources.JSONIPSource, 'https://fake-ip-json-url.com/', 'query')
         ipp = echoip.providers.MultisourceIPProvider(cache_ttl=2)
@@ -170,7 +170,7 @@ class TestMultisourceIPProvider(unittest.TestCase):
     def test_cache_non_agreement(self, m):
         m.register_uri('GET', 'https://fake-ip-url.com/', text='127.0.0.1\n')
         m.register_uri('GET', 'https://fake-ip-json-url.com/', text='{"countryCode":"US", "query":"127.0.0.1"}')
-        fac = echoip.sources.IPSourceFactory(use_builtins=False)
+        fac = echoip.sources.IPSourceFactory()
         fac.add_source(echoip.sources.SimpleIPSource, 'https://fake-ip-url.com/')
         fac.add_source(echoip.sources.JSONIPSource, 'https://fake-ip-json-url.com/', 'query')
         ipp = echoip.providers.MultisourceIPProvider(cache_ttl=2)
