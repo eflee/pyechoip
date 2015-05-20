@@ -1,3 +1,9 @@
+"""
+Sources are objects that take a URL to configure a source and
+provide functionality for parsing common source types to
+provide the IP and additinoal information returned from the
+source.
+"""
 __docformat__ = 'restructuredtext en'
 __author__ = 'Eli Flesher <eli@eflee.us>'
 
@@ -12,38 +18,53 @@ import ipaddress
 
 class IIPSource(zope.interface.Interface):
     """
-    The IPSource is an object that provides the IP address from an outside API. Any other information provided by the
-    API is stores in the info dict.
+    The IPSource is an object that provides the IP address from
+    an outside API. Any other information provided by the API
+    is stores in the info dict.
     """
 
-    ip = zope.interface.Attribute("""The current external IP address""")
+    def __init__(self):
+        """
+        Empty Constructor that shouldn't be ran for PyLint
+        """
+
+    def fetch(self):
+        """
+        Performs a refresh from source
+        """
+
+    ip_address = zope.interface.Attribute("""The current external IP address""")
     info = zope.interface.Attribute("""A Dict of any other information returned by the API""")
 
 
 class SimpleIPSource(object):
+    """
+    Text Based IP Sources are intended for simple providers
+    like curlmyip.com that return plain-text responses containing
+    only the IP. The only mutation performed on this response is
+    str.strip() to remove white space.
+    """
     zope.interface.implements(IIPSource)
 
     def __init__(self, ip_url):
         """
-        Text Based IP Sources are intended for simple providers like curlmyip.com that return
-        plain-text responses containing only the IP. The only mutation performed on this response is str.strip()
-        to remove white space
+        Constructor
         :param ip_url: The URL used to get the IP
         :type ip_url: str
         """
         self._ip_url = ip_url
-        self._ip = None
+        self._ip_address = None
         self._info = None
 
     @property
-    def ip(self):
+    def ip_address(self):
         """
         Returns the IP from source.
         :return: The IP
         :rtype: ipaddress.IPv4Address or ipaddress.IPv6Address
         """
-        self._fetch()
-        return copy.deepcopy(self._ip)
+        self.fetch()
+        return copy.deepcopy(self._ip_address)
 
     @property
     def info(self):
@@ -52,26 +73,28 @@ class SimpleIPSource(object):
         :return: any additional information returned by the API
         :rtype: dict
         """
-        self._fetch()
+        self.fetch()
         return self._info
 
-    def _fetch(self):
+    def fetch(self):
         """
         Performs a refresh from source
         :return: None
         :rtype: None
         """
         response = requests.get(self._ip_url)
-        self._ip = ipaddress.ip_address(response.content.strip())
+        self._ip_address = ipaddress.ip_address(response.content.strip())
         self._info = dict()
 
 
 class JSONIPSource(SimpleIPSource):
+    """
+    JSON Based IP Sources support providers that return JSON responses like ip-api.com.
+    """
     zope.interface.implements(IIPSource)
 
     def __init__(self, ip_url, ip_key):
         """
-        JSON Based IP Sources support providers that return JSON responses like ip-api.com.
         :param ip_url: The URL used to get the IP
         :type ip_url: str
         :param ip_key: The key in the json response used to encapsulate the IP
@@ -80,7 +103,7 @@ class JSONIPSource(SimpleIPSource):
         super(JSONIPSource, self).__init__(ip_url)
         self._ip_key = ip_key
 
-    def _fetch(self):
+    def fetch(self):
         """
         Performs a refresh from source
         :return: None
@@ -91,12 +114,15 @@ class JSONIPSource(SimpleIPSource):
         raw_ip = raw_response[self._ip_key]
         if isinstance(raw_ip, (tuple, list)):
             raw_ip = raw_ip[0]
-        self._ip = ipaddress.ip_address(raw_ip)
+        self._ip_address = ipaddress.ip_address(raw_ip)
         self._info = raw_response
-        del (self._info[self._ip_key])
+        del self._info[self._ip_key]
 
 
 class IPSourceFactory(object):
+    """
+    A Factory that can be used to generate IIPSource providers
+    """
     # noinspection PyPep8
     _builtin_sources = {'ip-api.com': (JSONIPSource, 'http://ip-api.com/json', 'ip'),
                         'ifconfig.me': (JSONIPSource, 'http://ifconfig.me/all.json', 'ip_addr'),
@@ -105,26 +131,26 @@ class IPSourceFactory(object):
                         'ipinfo.org': (JSONIPSource, 'http://ipinfo.org/json', 'ip'),
                         'trackip.net': (JSONIPSource, 'http://www.trackip.net/ip?json', 'ip'),
                         'httpbin.org': (JSONIPSource, 'http://httpbin.org/get', 'origin'),
-                        'wtfismyip.com': (JSONIPSource, 'http://wtfismyip.com/json', 'YourFuckingIPAddress'),
+                        'wtfismyip.com': (JSONIPSource, 'http://wtfismyip.com/json',
+                                          'YourFuckingIPAddress'),
                         'ipecho.net': (SimpleIPSource, 'http://ipecho.net/plain'),
                         'eth0.me': (SimpleIPSource, 'http://eth0.me/'),
-                        'ip.appstop.com': (SimpleIPSource, 'http://ip.appspot.com/'),
                         'l2.io': (SimpleIPSource, 'http://l2.io/ip'),
                         'curlmyip.com': (SimpleIPSource, 'http://curlmyip.com/'),
-                        'icanhazip.com': (SimpleIPSource, 'http://icanhazip.com/'),
-    }
+                        'icanhazip.com': (SimpleIPSource, 'http://icanhazip.com/')}
 
     def __init__(self, use_builtins=True):
         """
         A Factory that can be used to generate IIPSource providers
-        :param use_builtins: there are a number of built-in sources available in this library, this option includes
-        them by default in the factory.
+        :param use_builtins: there are a number of built-in sources
+        available in this library, this option includes them by
+        default in the factory.
         :type use_builtins: bool
         """
         self._sources = set()
         if use_builtins:
-            for v in self._builtin_sources.values():
-                self.add_source(*v)
+            for args in self._builtin_sources.values():
+                self.add_source(*args)
 
     def add_source(self, source_class, *constructor_args):
         """

@@ -1,3 +1,7 @@
+"""
+Providers are objects that provide IPs from IPSources with caching
+and (for MultisourceIPProvider) with consensus protocols.
+"""
 __docformat__ = 'restructuredtext en'
 __author__ = 'Eli Flesher <eli@eflee.us>'
 
@@ -6,22 +10,34 @@ import time
 import random
 
 import zope.interface
-import ipaddress
+
 import requests
 
-import sources
-
+from . import sources
 
 # noinspection PyMethodMayBeStatic
 class _IIPProvider(zope.interface.Interface):
+    """
+    Provider (zopes) interface specifying what public methods
+    must be provided by a Provider
+    """
+    def __init__(self):
+        """ Constructor """
+
     def add_source(self, source):
         """Adds a source to the set being used by the provider"""
 
     def get_ip(self):
-        """Round robin through the configured providers until one returns an IP, then cache it"""
+        """
+        Round robin through the configured providers until
+        one returns an IP, then cache it.
+        """
 
     def get_info(self, required_info_keys=None):
-        """Round robin through the configured providers until one returns the keys required, then cache it"""
+        """
+        Round robin through the configured providers until
+        one returns the keys required, then cache it.
+        """
 
     def invalidate_cache(self):
         """Invalidates the cache"""
@@ -31,13 +47,16 @@ class _IIPProvider(zope.interface.Interface):
 
 
 class IPProvider(object):
+    """
+    The IPProvider takes one or more IPSources and returns the results from them. If one
+    provider does not respond it will move on to the next. It ensures that the age of the
+    response on no older than the cache_ttl.
+    """
     zope.interface.implements(_IIPProvider)
 
     def __init__(self, source_list=None, cache_ttl=3600):
         """
-        The IPProvider takes one or more IPSources and returns the results from them . If one
-        provider does not respond it will move on to the next. It ensures that the age of the
-        response on no older than the cache_ttl.
+        Constructor
 
         :param source_list: The list of sources to bootstrap the provider with
         :type source_list: list of IIPSource providers
@@ -80,7 +99,8 @@ class IPProvider(object):
 
     def get_info(self, required_info_keys=None):
         """
-        Round robin through the configured providers until one returns the keys required, then cache it
+        Round robin through the configured providers until one returns the keys
+        required, then cache it
         :param required_info_keys: The keys required for the fetch to be valid
         :type required_info_keys: list(tuple)
         :return: The info dictionary returned by the provider
@@ -93,18 +113,25 @@ class IPProvider(object):
         return self._cache_info
 
     def _fetch_from_sources(self, required_info_keys=None):
+        """
+        Internal method that fetches from configured sources.
+        :param required_info_keys: Keys that are required in the response
+        :type required_info_keys: list
+        :return: None
+        :rtype: None
+        """
         srces = self._sources.keys()
         random.shuffle(srces)
         for source in srces:
             try:
                 # noinspection PyProtectedMember
-                source._fetch()
+                source.fetch()
 
-                ip = source.ip
+                ip_address = source.ip_address
                 info = source.info
 
-                if not required_info_keys or self._verify_required_keys(info, required_info_keys):
-                    return ip, info
+                if self._verify_required_keys(info, required_info_keys):
+                    return ip_address, info
 
             except (ValueError, requests.ConnectionError):
                 continue
@@ -113,6 +140,16 @@ class IPProvider(object):
 
     @staticmethod
     def _verify_required_keys(info, required_info_keys):
+        """
+        Private method to check that all keys required in an info response
+        are provided.
+
+        :param info: The dict to check for keys
+        :type info: dict
+        :param required_info_keys: a list of keys that are required. Lists or tuples
+        provided in this list indicate that at least one key in the set must be present.
+        :type required_info_keys: list(str, list(str))
+        """
         keys_found = True
         if required_info_keys is not None:
             for key in required_info_keys:
@@ -144,22 +181,27 @@ class IPProvider(object):
 
     @property
     def num_sources(self):
+        """
+        Returns the number of configured sources in the provider
+        """
         return len(self._sources)
 
 
 class MultisourceIPProvider(IPProvider):
+    """
+    The IPProvider takes one or more IPSources and returns the results from
+    them if the minimum number of sources are in agreement regard the external IP.
+    Additional info from multiple providers is extended into one dictionary.
+    If one provider does not respond it will move on to the next. It ensures
+    that the age of the response on no older than the cache_ttl.
+    """
     def __init__(self, source_list=None, cache_ttl=3600, min_source_agreement=2):
         """
-        The IPProvider takes one or more IPSources and returns the results from them if the minimum number of sources
-        are in agreement regard the external IP.
-        Additional info from multiple providers is extended into one dictionary.
-        If one provider does not respond it will move on to the next. It ensures that the age of the
-        response on no older than the cache_ttl.
-
         :param source_list: The list of sources to bootstrap the provider with
         :type source_list: list of IIPSource providers
         :param cache_ttl: the seconds the ip cache remains valid
-        :param min_source_agreement: The minimum number of source that must be in agreement for an ip_fetch
+        :param min_source_agreement: The minimum number of source that must be
+        in agreement for an ip_fetch
         :type min_source_agreement: int
         """
         super(MultisourceIPProvider, self).__init__(source_list, cache_ttl)
@@ -167,8 +209,9 @@ class MultisourceIPProvider(IPProvider):
 
     def _fetch_from_sources(self, required_info_keys=None):
         if self.num_sources < self._min_source_agreement:
-            raise InsufficientSourcesForAgreementError("{} sources are required but only {} configured".format(
-                self._min_source_agreement, self.num_sources))
+            raise InsufficientSourcesForAgreementError(
+                "{} sources are required but only {} configured"
+                .format(self._min_source_agreement, self.num_sources))
         infos = dict()
         ips = collections.defaultdict(list)
         srces = self._sources.keys()
@@ -176,30 +219,39 @@ class MultisourceIPProvider(IPProvider):
         for source in srces:
             try:
                 # noinspection PyProtectedMember
-                source._fetch()
-                ip = source.ip
+                source.fetch()
+                ip_address = source.ip_address
                 info = source.info
 
-                if ip not in ips.keys():
-                    ips[ip].append(source)
+                if ip_address not in ips.keys():
+                    ips[ip_address].append(source)
                     infos[source] = info
                 else:
-                    for src in ips[ip]:
+                    for src in ips[ip_address]:
                         info.update(infos[src])
 
-                    if not required_info_keys or self._verify_required_keys(info, required_info_keys):
-                        return ip, info
+                    if self._verify_required_keys(info, required_info_keys):
+                        return ip_address, info
                     else:
                         infos[source] = source.info
             except (ValueError, requests.ConnectionError):
                 continue
 
-        raise InsufficientSourcesForAgreementError("An insufficient number of sources were able to agree.")
+        raise InsufficientSourcesForAgreementError(
+            "An insufficient number of sources were able to agree.")
 
 
 class InsufficientSourcesForAgreementError(Exception):
+    """
+    Exception raised when there is not clear consensus
+    among configured sources. This is often due to the
+    minimum agreement argument.
+    """
     pass
 
 
 class NullResponseFromSourcesError(Exception):
+    """
+    Exception raised when no sources return a valid response
+    """
     pass

@@ -19,8 +19,8 @@ class TestTextBasedIPSource(unittest.TestCase):
     def test_ip_success(self, m):
         """Tests that a proper response from the URL yields the right interface"""
         m.register_uri('GET', 'https://fake-ip-url.com/', text='127.0.0.1\n')
-        self.assertIsInstance(self.source.ip, ipaddress.IPv4Address, "IP address is parsable as IPv4")
-        self.assertEquals(ipaddress.IPv4Address('127.0.0.1'), self.source.ip)
+        self.assertIsInstance(self.source.ip_address, ipaddress.IPv4Address, "IP address is parsable as IPv4")
+        self.assertEquals(ipaddress.IPv4Address('127.0.0.1'), self.source.ip_address)
 
     @requests_mock.Mocker()
     def test_info_success(self, m):
@@ -34,10 +34,10 @@ class TestTextBasedIPSource(unittest.TestCase):
         """Tests proper failure if crap data is returned"""
         m.register_uri('GET', 'https://fake-ip-url.com/', text="Slartibartfast")
         with self.assertRaises(ValueError):
-            self.source._fetch()
+            self.source.fetch()
         with self.assertRaises(ValueError):
             # noinspection PyStatementEffect
-            self.source.ip
+            self.source.ip_address
         with self.assertRaises(ValueError):
             # noinspection PyStatementEffect
             self.source.info
@@ -49,10 +49,10 @@ class TestTextBasedIPSource(unittest.TestCase):
         m.register_uri('GET', 'https://fake-ip-url.com/', text='Fail')
         with self.assertRaises(requests.ConnectionError):
             # noinspection PyStatementEffect
-            self.source._fetch()
+            self.source.fetch()
         with self.assertRaises(requests.ConnectionError):
             # noinspection PyStatementEffect
-            self.source.ip
+            self.source.ip_address
         with self.assertRaises(requests.ConnectionError):
             # noinspection PyStatementEffect
             self.source.info
@@ -61,18 +61,18 @@ class TestTextBasedIPSource(unittest.TestCase):
     def test_refresh_success(self, m):
         """Tests that the ip and info are unset until refresh happens"""
         m.register_uri('GET', 'https://fake-ip-url.com/', text='127.0.0.1\n')
-        self.assertIsNone(self.source._ip)
+        self.assertIsNone(self.source._ip_address)
         self.assertIsNone(self.source._info)
-        self.source._fetch()
-        self.assertIsNotNone(self.source.ip)
+        self.source.fetch()
+        self.assertIsNotNone(self.source.ip_address)
         self.assertIsNotNone(self.source.info)
 
     @requests_mock.Mocker()
     def test_auto_refresh_for_ip_property(self, m):
         """Tests that the ip property being none causes a refresh to happen transparently"""
         m.register_uri('GET', 'https://fake-ip-url.com/', text='127.0.0.1\n')
-        self.assertIsNone(self.source._ip)
-        self.assertIsNotNone(self.source.ip)
+        self.assertIsNone(self.source._ip_address)
+        self.assertIsNotNone(self.source.ip_address)
 
     @requests_mock.Mocker()
     def test_auto_refresh_for_info_property(self, m):
