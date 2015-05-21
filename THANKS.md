@@ -25,6 +25,6 @@ Built-in Sources
 ### Sources providing free APIs
 * curlmyip.com Carl Humphrey (carl@carlhumphrey.com)
 * wtfismyip.com by Clint Ruoho (support@wtfismyip.com)
+* l2.io by Ben Dowling (github.com/coderholic)
 * eth0.me by Stephen Wood
 * httpbin.org by Runscope
-* l2.io
