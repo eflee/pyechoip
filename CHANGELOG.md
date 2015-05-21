@@ -7,6 +7,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - None pending
 
+## [1.3] - 2015-05-20
+### Added
+- None
+
+### Changed
+- Transparent changes for Python3 compatability
+
+### Fixed
+- None
+
+### Removed
+- None
+
 ## [1.2] - 2015-05-20
 ### Added
 - IPSourceFactory generates builtins by default
