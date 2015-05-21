@@ -82,7 +82,7 @@ class SimpleIPSource(object):
         :return: None
         :rtype: None
         """
-        response = requests.get(self._ip_url)
+        response = requests.get(self._ip_url, headers = {"User-Agent": "Python Automation using PyEchoIP Library"})
         self._ip_address = ipaddress.ip_address(response.content.strip())
         self._info = dict()
 
@@ -109,7 +109,7 @@ class JSONIPSource(SimpleIPSource):
         :return: None
         :rtype: None
         """
-        response = requests.get(self._ip_url)
+        response = requests.get(self._ip_url, headers = {"User-Agent": "Python Automation using PyEchoIP Library"})
         raw_response = response.json()
         raw_ip = raw_response[self._ip_key]
         if isinstance(raw_ip, (tuple, list)):

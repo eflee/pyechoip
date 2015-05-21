@@ -1,10 +1,27 @@
 Change Log
+==========
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased][unreleased]
+## Unreleased
 ### Changed
 - None pending
+
+## [1.2] - 2015-05-20
+### Added
+- IPSourceFactory generates builtins by default
+- 7 configured builtin providers
+- Adding User-Agent of "Python Automation using PyEchoIP Library" at the request
+ of one built-in provider
+
+### Changed
+- None
+
+### Fixed
+- None
+
+### Removed
+- None
 
 ## [1.1] - 2015-05-20
 ### Added
