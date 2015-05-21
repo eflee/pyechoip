@@ -123,11 +123,28 @@ class IPSourceFactory(object):
     """
     A Factory that can be used to generate IIPSource providers
     """
-    def __init__(self):
+    # noinspection PyPep8
+    _builtin_sources = {'ip-api.com': (JSONIPSource, 'http://ip-api.com/json', 'ip'),
+                        'ipinfo.io': (JSONIPSource, 'http://ipinfo.io/json', 'ip'),
+                        'httpbin.org': (JSONIPSource, 'http://httpbin.org/get', 'origin'),
+                        'wtfismyip.com': (JSONIPSource, 'http://wtfismyip.com/json',
+                                          'YourFuckingIPAddress'),
+                        'eth0.me': (SimpleIPSource, 'http://eth0.me/'),
+                        'l2.io': (SimpleIPSource, 'http://l2.io/ip'),
+                        'curlmyip.com': (SimpleIPSource, 'http://curlmyip.com/')}
+
+    def __init__(self, use_builtins=True):
         """
         A Factory that can be used to generate IIPSource providers
+        :param use_builtins: there are a number of built-in sources
+        available in this library, this option includes them by
+        default in the factory.
+        :type use_builtins: bool
         """
         self._sources = set()
+        if use_builtins:
+            for args in self._builtin_sources.values():
+                self.add_source(*args)
 
     def add_source(self, source_class, *constructor_args):
         """
@@ -147,7 +164,7 @@ class IPSourceFactory(object):
         Generates instantiated sources from the factory
         :param limit: the max number of sources to yield
         :type limit: int
-        :param types_list: filter by types so the constructor can be used to accommodate many types
+        :param types_list: filter by types so the constructor can be used to accomidate many types
         :type types_list: class or list of classes
         :return: Yields types added by add_source
         :rtype: generator
