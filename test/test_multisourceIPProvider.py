@@ -34,7 +34,7 @@ class TestMultisourceIPProvider(unittest.TestCase):
         ipp = echoip.providers.MultisourceIPProvider()
         for source in fac.get_sources():
             ipp.add_source(source)
-        self.assertEquals(ipp.get_ip(), IPv4Address('127.0.0.1'))
+        self.assertEquals(ipp.get_ip(), IPv4Address(u'127.0.0.1'))
 
     @requests_mock.Mocker()
     def test_get_ip_non_agreement(self, m):
@@ -119,11 +119,11 @@ class TestMultisourceIPProvider(unittest.TestCase):
         for source in fac.get_sources():
             ipp.add_source(source)
 
-        self.assertEquals(ipp.get_ip(), IPv4Address('127.0.0.1'))
+        self.assertEquals(ipp.get_ip(), IPv4Address(u'127.0.0.1'))
         m.register_uri('GET', 'https://fake-ip-url.com/', text='127.0.0.2\n')
         m.register_uri('GET', 'https://fake-ip-json-url.com/', text='{"countryCode":"US", "query":"127.0.0.2"}')
         ipp.invalidate_cache()
-        self.assertEquals(ipp.get_ip(), IPv4Address('127.0.0.2'))
+        self.assertEquals(ipp.get_ip(), IPv4Address(u'127.0.0.2'))
 
     @requests_mock.Mocker()
     def test_invalidate_cache_non_agreement(self, m):
@@ -137,11 +137,11 @@ class TestMultisourceIPProvider(unittest.TestCase):
             ipp.add_source(source)
 
         with self.assertRaises(echoip.providers.InsufficientSourcesForAgreementError):
-            self.assertEquals(ipp.get_ip(), IPv4Address('127.0.0.1'))
+            self.assertEquals(ipp.get_ip(), IPv4Address(u'127.0.0.1'))
             m.register_uri('GET', 'https://fake-ip-url.com/', text='127.0.0.1\n')
             m.register_uri('GET', 'https://fake-ip-json-url.com/', text='{"countryCode":"US", "query":"127.0.0.2"}')
             ipp.invalidate_cache()
-            self.assertEquals(ipp.get_ip(), IPv4Address('127.0.0.2'))
+            self.assertEquals(ipp.get_ip(), IPv4Address(u'127.0.0.2'))
 
     @requests_mock.Mocker()
     def test_cache(self, m):
@@ -155,7 +155,7 @@ class TestMultisourceIPProvider(unittest.TestCase):
             ipp.add_source(source)
 
         timestamp = time.time()
-        self.assertEquals(ipp.get_ip(), IPv4Address('127.0.0.1'))
+        self.assertEquals(ipp.get_ip(), IPv4Address(u'127.0.0.1'))
         m.register_uri('GET', 'https://fake-ip-url.com/', text='127.0.0.2\n')
         m.register_uri('GET', 'https://fake-ip-json-url.com/', text='{"countryCode":"US", "query":"127.0.0.2"}')
 
@@ -164,7 +164,7 @@ class TestMultisourceIPProvider(unittest.TestCase):
             time.sleep(0.5)
         self.assertFalse(ipp.is_cache_valid())
 
-        self.assertEquals(ipp.get_ip(), IPv4Address('127.0.0.2'))
+        self.assertEquals(ipp.get_ip(), IPv4Address(u'127.0.0.2'))
 
     @requests_mock.Mocker()
     def test_cache_non_agreement(self, m):
@@ -178,7 +178,7 @@ class TestMultisourceIPProvider(unittest.TestCase):
             ipp.add_source(source)
 
         timestamp = time.time()
-        self.assertEquals(ipp.get_ip(), IPv4Address('127.0.0.1'))
+        self.assertEquals(ipp.get_ip(), IPv4Address(u'127.0.0.1'))
         m.register_uri('GET', 'https://fake-ip-url.com/', text='127.0.0.1\n')
         m.register_uri('GET', 'https://fake-ip-json-url.com/', text='{"countryCode":"US", "query":"127.0.0.2"}')
 
@@ -187,4 +187,4 @@ class TestMultisourceIPProvider(unittest.TestCase):
             while time.time() - timestamp < 3:
                 time.sleep(0.5)
             self.assertFalse(ipp.is_cache_valid())
-            self.assertEquals(ipp.get_ip(), IPv4Address('127.0.0.2'))
+            self.assertEquals(ipp.get_ip(), IPv4Address(u'127.0.0.2'))

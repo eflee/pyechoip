@@ -83,7 +83,7 @@ class SimpleIPSource(object):
         :rtype: None
         """
         response = requests.get(self._ip_url, headers = {"User-Agent": "Python Automation using PyEchoIP Library"})
-        self._ip_address = ipaddress.ip_address(response.content.strip())
+        self._ip_address = ipaddress.ip_address(unicode(response.content.strip()))
         self._info = dict()
 
 
@@ -111,10 +111,17 @@ class JSONIPSource(SimpleIPSource):
         """
         response = requests.get(self._ip_url, headers = {"User-Agent": "Python Automation using PyEchoIP Library"})
         raw_response = response.json()
-        raw_ip = raw_response[self._ip_key]
-        if isinstance(raw_ip, (tuple, list)):
-            raw_ip = raw_ip[0]
-        self._ip_address = ipaddress.ip_address(raw_ip)
+        try:
+            raw_ip = raw_response[self._ip_key]
+            if isinstance(raw_ip, (tuple, list)):
+                raw_ip = raw_ip[0]
+        except KeyError:
+            raise InvalidJSONSourceIPKey("Key {} not in response dictionary for URL {}"
+                                           .format(self._ip_key, self._ip_url))
+        except IndexError:
+            raise InvalidJSONSourceIPValue("The Value returned for the IP key was an empty list")
+
+        self._ip_address = ipaddress.ip_address(unicode(raw_ip))
         self._info = raw_response
         del self._info[self._ip_key]
 
@@ -190,3 +197,14 @@ class IPSourceFactory(object):
         :rtype: int
         """
         return len(self._sources)
+
+
+class InvalidJSONSourceIPKey(Exception):
+    """
+    Thrown when the key configured for the JSONIPSource is not in the returned dict
+    """
+
+class InvalidJSONSourceIPValue(Exception):
+    """
+    Thrown when the key configured for the JSONIPSource is not in the returned dict
+    """

@@ -7,7 +7,7 @@ setup(
     package_dir={'': 'src'},
     
     include_package_data = True,
-    install_requires=['mock>=1.0.1', 'py2-ipaddress>=2.0', 'requests>=2.5.0', 'zope.interface>=4.1.1'],
+    install_requires=['mock>=1.0.1', 'ipaddress>=1.0', 'requests>=2.5.0', 'zope.interface>=4.1.1'],
     tests_require=['requests-mock>=0.5.1'],
     test_suite='test',
 

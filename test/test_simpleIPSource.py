@@ -20,7 +20,7 @@ class TestTextBasedIPSource(unittest.TestCase):
         """Tests that a proper response from the URL yields the right interface"""
         m.register_uri('GET', 'https://fake-ip-url.com/', text='127.0.0.1\n')
         self.assertIsInstance(self.source.ip_address, ipaddress.IPv4Address, "IP address is parsable as IPv4")
-        self.assertEquals(ipaddress.IPv4Address('127.0.0.1'), self.source.ip_address)
+        self.assertEquals(ipaddress.IPv4Address(u'127.0.0.1'), self.source.ip_address)
 
     @requests_mock.Mocker()
     def test_info_success(self, m):

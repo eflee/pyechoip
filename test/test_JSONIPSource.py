@@ -20,7 +20,14 @@ class TestJSONBasedIPSource(unittest.TestCase):
         """Tests that a proper response from the URL yields the right interface"""
         m.register_uri('GET', 'https://fake-ip-url.com/', text='{"countryCode": "US", "query": "127.0.0.1"}')
         self.assertIsInstance(self.source.ip_address, ipaddress.IPv4Address, "IP address is parsable as IPv4")
-        self.assertEquals(ipaddress.IPv4Address('127.0.0.1'), self.source.ip_address)
+        self.assertEquals(ipaddress.IPv4Address(u'127.0.0.1'), self.source.ip_address)
+
+    @requests_mock.Mocker()
+    def test_ip_bad_key(self, m):
+        """Tests that a proper response from the URL yields the right interface"""
+        m.register_uri('GET', 'https://fake-ip-url.com/', text='{"countryCode": "US", "ip": "127.0.0.1"}')
+        with self.assertRaises(echoip.sources.InvalidJSONSourceIPKey):
+            self.source.ip_address
 
     @requests_mock.Mocker()
     def test_info_success(self, m):
