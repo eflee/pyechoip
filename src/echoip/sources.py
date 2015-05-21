@@ -168,7 +168,7 @@ class IPSourceFactory(object):
         else:
             self._sources.add((source_class, constructor_args))
 
-    def get_sources(self, limit=sys.maxint, types_list=None):
+    def get_sources(self, limit=sys.maxsize, types_list=None):
         """
         Generates instantiated sources from the factory
         :param limit: the max number of sources to yield
