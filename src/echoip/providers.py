@@ -10,6 +10,7 @@ import time
 import random
 
 import zope.interface
+from zope.interface.declarations import implementer
 
 import requests
 
@@ -46,13 +47,13 @@ class _IIPProvider(zope.interface.Interface):
         """Evaluates the validity of the cache"""
 
 
+@implementer(_IIPProvider)
 class IPProvider(object):
     """
     The IPProvider takes one or more IPSources and returns the results from them. If one
     provider does not respond it will move on to the next. It ensures that the age of the
     response on no older than the cache_ttl.
     """
-    zope.interface.implements(_IIPProvider)
 
     def __init__(self, source_list=None, cache_ttl=3600):
         """
@@ -187,6 +188,7 @@ class IPProvider(object):
         return len(self._sources)
 
 
+@implementer(_IIPProvider)
 class MultisourceIPProvider(IPProvider):
     """
     The IPProvider takes one or more IPSources and returns the results from

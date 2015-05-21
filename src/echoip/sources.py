@@ -12,6 +12,7 @@ import random
 import sys
 
 import zope.interface
+from zope.interface.declarations import implementer
 import requests
 import ipaddress
 
@@ -37,6 +38,7 @@ class IIPSource(zope.interface.Interface):
     info = zope.interface.Attribute("""A Dict of any other information returned by the API""")
 
 
+@implementer(IIPSource)
 class SimpleIPSource(object):
     """
     Text Based IP Sources are intended for simple providers
@@ -44,7 +46,6 @@ class SimpleIPSource(object):
     only the IP. The only mutation performed on this response is
     str.strip() to remove white space.
     """
-    zope.interface.implements(IIPSource)
 
     def __init__(self, ip_url):
         """
@@ -87,11 +88,11 @@ class SimpleIPSource(object):
         self._info = dict()
 
 
+@implementer(IIPSource)
 class JSONIPSource(SimpleIPSource):
     """
     JSON Based IP Sources support providers that return JSON responses like ip-api.com.
     """
-    zope.interface.implements(IIPSource)
 
     def __init__(self, ip_url, ip_key):
         """
@@ -122,6 +123,7 @@ class JSONIPSource(SimpleIPSource):
             raise InvalidJSONSourceIPValue("The Value returned for the IP key was an empty list")
 
         self._ip_address = ipaddress.ip_address(unicode(raw_ip))
+
         self._info = raw_response
         del self._info[self._ip_key]
 
@@ -131,7 +133,7 @@ class IPSourceFactory(object):
     A Factory that can be used to generate IIPSource providers
     """
     # noinspection PyPep8
-    _builtin_sources = {'ip-api.com': (JSONIPSource, 'http://ip-api.com/json', 'ip'),
+    _builtin_sources = {'ip-api.com': (JSONIPSource, 'http://ip-api.com/json', 'query'),
                         'ipinfo.io': (JSONIPSource, 'http://ipinfo.io/json', 'ip'),
                         'httpbin.org': (JSONIPSource, 'http://httpbin.org/get', 'origin'),
                         'wtfismyip.com': (JSONIPSource, 'http://wtfismyip.com/json',
